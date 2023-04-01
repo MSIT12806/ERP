@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ERP_Core", "ERP_Domain\ERP_Core\ERP_Core.csproj", "{2B707458-7388-4B5E-A1D1-6679AAC14CA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain_Core", "ERP_Domain\ERP_Core\Domain_Core.csproj", "{2B707458-7388-4B5E-A1D1-6679AAC14CA4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ERP_Schedule", "ERP_Domain\ERP_Schedule\ERP_Schedule.csproj", "{654E0E62-0872-4B86-AF61-4044FE785CAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain_Schedule", "ERP_Domain\ERP_Schedule\Domain_Schedule.csproj", "{654E0E62-0872-4B86-AF61-4044FE785CAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Account", "ERP_UseCase\Account\Account.csproj", "{644D551B-DF4D-4CC6-B3D2-8CAB7D672E93}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UseCase_Account", "ERP_UseCase\Account\UseCase_Account.csproj", "{644D551B-DF4D-4CC6-B3D2-8CAB7D672E93}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NET6MiddleWareStudy", "Test\WebApplication1\NET6MiddleWareStudy.csproj", "{0986E8AF-3F58-4ECB-8738-E7A9181E4FCE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{644D551B-DF4D-4CC6-B3D2-8CAB7D672E93}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{644D551B-DF4D-4CC6-B3D2-8CAB7D672E93}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{644D551B-DF4D-4CC6-B3D2-8CAB7D672E93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0986E8AF-3F58-4ECB-8738-E7A9181E4FCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0986E8AF-3F58-4ECB-8738-E7A9181E4FCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0986E8AF-3F58-4ECB-8738-E7A9181E4FCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0986E8AF-3F58-4ECB-8738-E7A9181E4FCE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
