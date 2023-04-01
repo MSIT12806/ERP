@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using NET6MiddleWareStudy;
+
 namespace WebApplication1
 {
     public class Program
@@ -18,11 +21,14 @@ namespace WebApplication1
             //});
 
             builder.Services.AddControllers();
-            builder.Services.AddScoped<IUserStore<ApplicationUser>, CustomUserStore>();
-            builder.Services.AddScoped<IRoleStore<ApplicationRole>, CustomRoleStore>();
+            builder.Services.AddScoped<IdentityUser, ApplicationUser>();
+            builder.Services.AddScoped<IdentityRole, ApplicationRole>();
+            builder.Services.AddScoped<IUserStore<IdentityUser>, CustomUserStore>();
+            builder.Services.AddScoped<IRoleStore<IdentityRole>, CustomRoleStore>();
+            builder.Services.AddDbContext<MyDbContext>(o=>o.UseInMemoryDatabase(databaseName: "MyDb"));
             //builder.Services.AddScoped<IUserStore<ApplicationUser>, UserStore<ApplicationUser, ApplicationRole, MyDbContext>>();
             //builder.Services.AddScoped<IRoleStore<ApplicationRole>, RoleStore<ApplicationRole, MyDbContext>>();
-            builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
                             .AddDefaultTokenProviders();
 
                 var app = builder.Build();
