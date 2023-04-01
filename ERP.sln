@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ERP_Core", "ERP_Core\ERP_Core.csproj", "{2B707458-7388-4B5E-A1D1-6679AAC14CA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ERP_Core", "ERP_Domain\ERP_Core\ERP_Core.csproj", "{2B707458-7388-4B5E-A1D1-6679AAC14CA4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ERP_Schedule", "ERP_Schedule\ERP_Schedule.csproj", "{654E0E62-0872-4B86-AF61-4044FE785CAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ERP_Schedule", "ERP_Domain\ERP_Schedule\ERP_Schedule.csproj", "{654E0E62-0872-4B86-AF61-4044FE785CAE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Account", "ERP_UseCase\Account\Account.csproj", "{644D551B-DF4D-4CC6-B3D2-8CAB7D672E93}"
 EndProject
