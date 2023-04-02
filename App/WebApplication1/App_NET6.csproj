@@ -16,6 +16,6 @@
 
 	<Target Name="VueBuild" BeforeTargets="Build">
 		<Exec WorkingDirectory="./View" Command="npm install" />
-		<Exec WorkingDirectory="./View" Command="npm run build" />
+		<Exec WorkingDirectory="./View" Command="npm run build --verbose" />
 	</Target>
 </Project>

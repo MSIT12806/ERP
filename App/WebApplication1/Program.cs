@@ -1,3 +1,4 @@
+using App_NET6.Controllers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -45,6 +46,7 @@ namespace WebApplication1
 
             app.UseAuthorization();
             app.UseStaticFiles();
+            app.UseMiddleware<SpaMiddleware>();
             //app.UseSession();
 
             app.MapControllers();

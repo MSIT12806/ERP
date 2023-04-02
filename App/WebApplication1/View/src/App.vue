@@ -4,6 +4,9 @@
         <h1 class="display-1 text-bold"> My App </h1>
         <h1 class="text-gray-soft text-regular"> Greetings to you all. </h1>
         <HelloWorld msg="Welcome to Your Vue.js App" />
+        <router-link to="/">Home</router-link>
+        <router-link to="/about">About</router-link>
+        <router-view></router-view>
     </div>
 </template>
 
