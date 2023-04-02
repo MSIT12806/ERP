@@ -22,6 +22,7 @@
         }
         private void Initialize()
         {
+            //TODO 所有要初始化的東東。
             throw new NotImplementedException();
         }
         IAccountPersistent _db;
