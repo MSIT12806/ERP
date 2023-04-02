@@ -13,4 +13,9 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\..\ERP_DriveAndFramework\Identity\Framework_Identity.csproj" />
 	</ItemGroup>
+
+	<Target Name="VueBuild" BeforeTargets="Build">
+		<Exec WorkingDirectory="./View" Command="npm install" />
+		<Exec WorkingDirectory="./View" Command="npm run build" />
+	</Target>
 </Project>
