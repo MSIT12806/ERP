@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App_NET6", "App\WebApplicat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Framework_Identity", "ERP_DriveAndFramework\Identity\Framework_Identity.csproj", "{F0D3CB2B-08B2-43C1-AA2E-3F3D4B8CA8B7}"
 EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "wwwroot", "App\WebApplication1\wwwroot\wwwroot.esproj", "{A312FFD5-31DB-405D-827E-1EC4216948F7}"
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "wwwroot", "App\WebApplication1\View\wwwroot.esproj", "{A312FFD5-31DB-405D-827E-1EC4216948F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

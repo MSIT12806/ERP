@@ -8,7 +8,7 @@ const baseFolder =
 
 const certificateArg = process.argv.map(arg => arg.match(/--name=(?<value>.+)/i)).filter(Boolean)[0];
 const certificateName = certificateArg ? certificateArg.groups.value : "wwwroot";
-
+const { createProxyMiddleware } = require('http-proxy-middleware');
 if (!certificateName) {
     console.error('Invalid certificate name. Run this script in the context of an npm/yarn script or pass --name=<<app>> explicitly.')
     process.exit(-1);
@@ -18,14 +18,18 @@ const certFilePath = path.join(baseFolder, `${certificateName}.pem`);
 const keyFilePath = path.join(baseFolder, `${certificateName}.key`);
 
 module.exports = {
+    // 將編譯後的檔案輸出到指定的目錄
+    outputDir: '../wwwroot',
     devServer: {
         https: {
             key: fs.readFileSync(keyFilePath),
             cert: fs.readFileSync(certFilePath),
         },
         proxy: {
-            '^/weatherforecast': {
-                target: 'https://localhost:5001/'
+            '^': {
+                target: 'https://localhost:7135/',
+                ws: true,
+                changeOrigin: true
             }
         },
         port: 5002
