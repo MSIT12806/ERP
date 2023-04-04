@@ -25,13 +25,15 @@ module.exports = {
             key: fs.readFileSync(keyFilePath),
             cert: fs.readFileSync(certFilePath),
         },
-        proxy: {
-            '^': {
-                target: 'https://localhost:7135/',
-                ws: true,
-                changeOrigin: true
+        proxy: process.env.NODE_ENV === 'production' ?
+            {
+                '^': {
+                    target: 'https://localhost:7135/',
+                    ws: true,
+                    changeOrigin: true
+                }
             }
-        },
+            : {},
         port: 5002
     }
 }
