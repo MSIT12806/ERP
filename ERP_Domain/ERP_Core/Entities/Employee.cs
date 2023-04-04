@@ -1,4 +1,6 @@
-﻿namespace ERP_Core
+﻿using ERP_Core.Adapters;
+
+namespace ERP_Core
 {
     public class Employee
     {
@@ -10,5 +12,18 @@
         public DateTime HireDate { get; set; }
         public bool IsManager { get; set; }
         public string DepartmentID { get; set; }
+
+        public void Join(IEmployeePersistent db)
+        {
+            db.Add(this);
+        }
+        public void Leave(IRemoveable db)
+        {
+            db.Remove(this.Id);
+        }
+        public void EditData(IEditable db)
+        {
+            db.Edit(this);
+        }
     }
 }

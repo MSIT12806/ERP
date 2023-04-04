@@ -6,15 +6,24 @@ using System.Threading.Tasks;
 
 namespace ERP_Core.Adapters
 {
-    public interface IAddable<Model>
+    public interface IEmployeePersistent
     {
-        void Add<Model>();
+        void Edit(Employee newData);
+        void Remove(string id);
+        void Add(Employee data);
+        Employee Get(string id);
+        IEnumerable<Employee> GetList();
     }
-    public interface IRemoveable
-    {
-    }
-    public interface IEditable<Model>
-    {
-        Model Edit();
-    }
+    //public interface IAddable
+    //{
+    //    void Add<Model>(Model data);
+    //}
+    //public interface IRemoveable
+    //{
+    //    void Remove(string id);
+    //}
+    //public interface IEditable
+    //{
+    //    void Edit<Model>(Model newData);
+    //}
 }
