@@ -79,11 +79,8 @@
             return Seats[seat - 1];//OutOfRangeException
         }
     }
-    public class Seat
+    public partial class Seat
     {
-        public static readonly char Empty = 'N';
-        public static readonly char Book = 'B';
-        public static readonly char Sold = 'Y';
         public Seat(int seatNo, int carbin)
         {
             EmptySeatInitialize(seatNo, carbin);
@@ -98,10 +95,16 @@
 
         public int SeatNo { get; private set; }
         public int Carbin { get; private set; }
-        public char State;// N / Y / B
+        public char State;
         public bool CanSell => Sold == Empty;
         public string SeatID => SeatNo.ToString();
         public string GetNeigborSeatID() { return ""; }
         public bool IsWindowSeat() { return false; }
+    }
+    public partial class Seat
+    {
+        public static readonly char Empty = 'N';
+        public static readonly char Book = 'B';
+        public static readonly char Sold = 'Y';
     }
 }
