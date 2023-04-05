@@ -17,11 +17,11 @@ namespace ERP_Core
         {
             db.Add(this);
         }
-        public void Leave(IRemoveable db)
+        public void Leave(IEmployeePersistent db)
         {
             db.Remove(this.Id);
         }
-        public void EditData(IEditable db)
+        public void EditData(IEmployeePersistent db)
         {
             db.Edit(this);
         }
