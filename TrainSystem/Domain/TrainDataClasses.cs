@@ -26,7 +26,21 @@
         public Seat SellFreeSeat(int carbin, int seat)
         {
             var carb = GetCarbin(carbin);
-            return null;
+            var r = carb.GetSeat(seat);
+            if (r.CanSell)
+                return r;
+
+            throw new InvalidOperationException("this seat can not be sold");
+        }
+        public TimeOnly ArriveTime(string station)
+        {
+            var stationData = Stations.First(i => i.StationName == station);
+            return stationData.ArriveTime;
+        }
+        public TimeOnly LeaveTime(string station)
+        {
+            var stationData = Stations.First(i => i.StationName == station);
+            return stationData.LeaveTime;
         }
     }
 
@@ -62,20 +76,30 @@
 
         public Seat GetSeat(int seat)
         {
-            return Seats[seat];//OutOfRangeException
+            return Seats[seat - 1];//OutOfRangeException
         }
     }
     public class Seat
     {
+        public static readonly char Empty = 'N';
+        public static readonly char Book = 'B';
+        public static readonly char Sold = 'Y';
         public Seat(int seatNo, int carbin)
+        {
+            EmptySeatInitialize(seatNo, carbin);
+        }
+
+        private void EmptySeatInitialize(int seatNo, int carbin)
         {
             SeatNo = seatNo;
             Carbin = carbin;
-            Sold = true;
+            State = Empty;
         }
-        public int SeatNo { get; }
-        public int Carbin { get; }
-        public bool Sold;
+
+        public int SeatNo { get; private set; }
+        public int Carbin { get; private set; }
+        public char State;// N / Y / B
+        public bool CanSell => Sold == Empty;
         public string SeatID => SeatNo.ToString();
         public string GetNeigborSeatID() { return ""; }
         public bool IsWindowSeat() { return false; }

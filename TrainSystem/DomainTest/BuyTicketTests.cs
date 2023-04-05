@@ -40,7 +40,7 @@ namespace DomainTest
         [Test]
         public void Test1()
         {
-            var ticket = ticketOperation.BuyTicket("219", Taipei, Taichung);
+            var ticket = ticketOperation.BuyTicket("219", Taipei, Taichung, 1, 1);
             Assert.AreEqual(Taipei, ticket.StartStation);
             Assert.AreEqual(Taichung, ticket.TargetStation);
         }

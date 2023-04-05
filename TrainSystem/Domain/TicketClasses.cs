@@ -13,13 +13,15 @@ namespace Train
         {
             GetNowWhenDateTimeIsDefault(ref dateTime);
             TrainData train = Repository.GetTrain(trainID);
-            //Ticket result = new Ticket();
-            throw new NotImplementedException();
+            var seatToBeSold = train.SellFreeSeat(1, 1);
+            Ticket result = new Ticket(startStation, train.LeaveTime(startStation), targetStation, train.ArriveTime(targetStation), train.TrainID, seatToBeSold.Carbin.ToString(), seatToBeSold.SeatID, dateTime, 100);
+            seatToBeSold.State = Seat.Book;
+            return result;
         }
 
         private TrainData GetTrain(string trainID)
         {
-            
+
             throw new NotImplementedException();
         }
 
