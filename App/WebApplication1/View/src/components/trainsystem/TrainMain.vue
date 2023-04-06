@@ -12,25 +12,72 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-6">
-                <h2 class="text-center mb-4">註冊新帳號</h2>
+                <h2 class="text-center mb-4">個人訂票</h2>
                 <form @submit.prevent="register">
                     <div class="form-group">
-                        <label for="username">使用者名稱</label>
+                        <label class="form-label" for="isId">身分證字號</label>
+                        <input id="isId" type="radio" name="idod" value="id" />
+                        <label class="form-label" for="isOd">居留證號</label>
+                        <input id="isOd" type="radio" name="idod" value="od" />
                         <input type="text" class="form-control" id="username" v-model="username" required>
                     </div>
-                    <div class="form-group">
-                        <label for="email">電子郵件</label>
-                        <input type="email" class="form-control" id="email" v-model="email" required>
+                    <div class="input-group">
+                        <input type="text" id="StartStation" class="form-control" placeholder="出發站" aria-label="出發站" />
+                        <a class="input-group-text btn">
+                            <i class="bi bi-arrow-left"></i><br />
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                        <input type="text" id="ArriveStation" class="form-control" placeholder="抵達站" aria-label="抵達站" />
+                        <label>日期</label>
+                        <input type="date" name="BoardingDate" />
                     </div>
-                    <div class="form-group">
-                        <label for="password">密碼</label>
-                        <input type="password" class="form-control" id="password" v-model="password" required>
+                    <div class="input-group">
+                        <label>訂票方式</label>
+                        <div class="btn-group">
+                            <input class="btn-check" type="radio" name="BuyType" id="ByCar" v-model="Interaction.buyType" value="ByCar" />
+                            <label class="btn btn-outline-danger" for="ByCar">依車次</label>
+                            <input class="btn-check" type="radio" name="BuyType" id="ByTime" v-model="Interaction.buyType" value="ByTime"  />
+                            <label class="btn btn-outline-danger" for="ByTime">依時段</label>
+                        </div>
+                        <div class="input-group">
+                            <label>一般座票數</label>
+                            <a class="input-group-text btn">+</a>
+                            <input type="text" />
+                            <a class="input-group-text btn">-</a>
+                        </div>
+                        <!--<div class="input-group">
+                <label>輪椅座票數</label>
+                <a class="input-group-text btn">+</a>
+                <input type="text" />
+                <a class="input-group-text btn">-</a>
+            </div>-->
                     </div>
-                    <div class="form-group" :class="{'has-error': !comfirm.passwordValid.isValid}">
-                        <label for="confirmPassword">確認密碼</label>
-                        <input type="password" class="form-control" id="confirmPassword" v-model="confirmPassword" required>
-                        <span v-if="!comfirm.passwordValid.isValid" class="help-block">{{ comfirm.passwordValid.message }}</span>
+                    <div v-if="Interaction.buyType=='ByCar'" class="card">
+                        <input type="date" placeholder="日期" />
+                        <input type="text" placeholder="車次(必填)" />
                     </div>
+                    <div class="card"  v-if="Interaction.buyType=='ByTime'">
+                        <input type="date" placeholder="日期" />
+                        <input type="time" name="TimeFrom" placeholder="時段" />
+                        <input type="time" name="TimeTo" placeholder="時段" />
+
+                        <div class="btn-group">
+                            <label>車種</label>
+                            <input class="btn-check" type="checkbox" name="BuyType" id="3000" />
+                            <label class="btn btn-outline-danger" for="3000">3000</label>
+                            <input class="btn-check" type="checkbox" name="BuyType" id="Taruku" />
+                            <label class="btn btn-outline-danger" for="Taruku">太魯閣</label>
+                            <input class="btn-check" type="checkbox" name="BuyType" id="Puyuma" />
+                            <label class="btn btn-outline-danger" for="Puyuma">普悠瑪</label>
+                            <input class="btn-check" type="checkbox" name="BuyType" id="TzeChiang" />
+                            <label class="btn btn-outline-danger" for="TzeChiang">自強</label>
+                            <input class="btn-check" type="checkbox" name="BuyType" id="Juguang" />
+                            <label class="btn btn-outline-danger" for="Juguang">莒光</label>
+                            <input class="btn-check" type="checkbox" name="BuyType" id="FuHsing" />
+                            <label class="btn btn-outline-danger" for="FuHsing">復興</label>
+                        </div>
+                    </div>
+
                     <button type="submit" class="btn btn-primary btn-block mt-4">註冊</button>
                 </form>
             </div>
@@ -40,14 +87,17 @@
 
 <script>
     export default {
-        name: "RonRegister",
+        name: "TrainMain",
         data() {
             return {
                 username: '',
                 email: '',
                 password: '',
                 confirmPassword: '',
+                Interaction: {
 
+                },
+                postdata: {},
                 comfirm: {
                     passwordValid: {
                         isValid: true,

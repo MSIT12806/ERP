@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import RonHome from '../components/Home.vue'
 import RonAbout from '../components/About.vue'
 import RonRegister from '../components/Register.vue'
+import TrainMain from '../components/trainsystem/TrainMain.vue'
 
 const routes = [
     {
@@ -18,6 +19,11 @@ const routes = [
         path: '/register',
         name: 'Register',
         component: RonRegister
+    },
+    {
+        path: '/trainMain',
+        name: 'TrainMain',
+        component: TrainMain
     }
 ]
 
