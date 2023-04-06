@@ -7,9 +7,10 @@
         public abstract void RemoveTrainData();
     }
 
-    public class TrainData
+    public partial class TrainData
     {
         public string TrainID;
+        public TrainType Type;
         public List<TrainTime> Stations;
         public List<Carbin> Carbins;
 
@@ -43,7 +44,19 @@
             return stationData.LeaveTime;
         }
     }
-
+    public partial class TrainData
+    {
+        public enum TrainType
+        {
+            自強,
+            莒光,
+            復興,
+            太魯閣,
+            普悠瑪,
+            區間車,
+            區間快車
+        }
+    }
     public class TrainTime
     {
         public string StationName;
