@@ -1,0 +1,61 @@
+<!-- 首頁 線上訂票 個人訂票 -->
+<!-- 網路訂票說明 -->
+<!-- 開放訂票期程 -->
+<!-- 完整訂票方式 -->
+單行程?雙行程? -> 應該就是之前的來回票那種東ㄒㄅ
+依車次、依時段
+出發站、抵達站、日期
+一般座票數
+車次(時刻表查詢)
+可接受同班車換座、靠窗、靠走道、桌座型
+<head>
+    <link rel="stylesheet"
+          href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <script src="https://unpkg.com/bootstrap/dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
+</head>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <h2 class="text-center mb-4">註冊新帳號</h2>
+            <form @submit.prevent="register">
+                <div class="form-group">
+                    <label class="form-label" for="isId">身分證字號</label>
+                    <input id="isId" type="radio" name="idod" value="id" />
+                    <label class="form-label" for="isOd">居留證號</label>
+                    <input id="isOd" type="radio" name="idod" value="od" />
+                    <input type="text" class="form-control" id="username" v-model="username" required>
+                </div>
+                <div class="card">
+                    <div class="input-group">
+                        <input type="text" id="StartStation" class="form-control" placeholder="出發站" aria-label="出發站" />
+                        <a class="input-group-text btn">
+                            <i class="bi bi-arrow-left"></i><br />
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                        <input type="text" id="ArriveStation" class="form-control" placeholder="抵達站" aria-label="抵達站" />
+                        <label>日期</label>
+                        <input type="date" name="BoardingDate" />
+                    </div>
+                    <div class="input-group">
+                        <label>一般座票數</label>
+                        <a class="input-group-text btn">+</a>
+                        <input type="text" />
+                        <a class="input-group-text btn">-</a>
+
+                    </div>
+
+                </div>
+
+                    <button type="submit" class="btn btn-primary btn-block mt-4">註冊</button>
+</form>
+        </div>
+    </div>
+</div>
+
+<script>
+
+</script>
+
+<style>
+</style>
