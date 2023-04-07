@@ -13,5 +13,6 @@ namespace Domain_Train
         public static readonly string Taoyuan = "taoyuan";
         public static readonly string Taichung = "taichung";
         public static readonly string Kaohsiung = "kaohsiung";
+        public static readonly string Hualian = "hualian";
     }
 }

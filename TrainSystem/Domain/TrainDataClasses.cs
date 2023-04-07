@@ -10,16 +10,28 @@
     public partial class TrainData
     {
         public string TrainID;
+        public HashSet<DateOnly> _noRunDate = new HashSet<DateOnly>();
         public TrainType Type;
-        public List<TrainTime> Stations;
+        public List<StationInfo> Stations;
         public List<Carbin> Carbins;
-
-        public TrainData(string trainID, IEnumerable<Carbin> carbins, IEnumerable<TrainTime> stationList)
+        #region Set train information
+        public TrainData(string trainID, IEnumerable<Carbin> carbins, IEnumerable<StationInfo> stationList)
         {
             TrainID = trainID;
             Carbins = carbins.ToList();
             Stations = stationList.ToList();
         }
+        public void AddNoRunDate(DateOnly date)
+        {
+            _noRunDate.Add(date);
+        }
+        public void RemoveNoRunDate(DateOnly date)
+        {
+            _noRunDate.Remove(date);
+        }
+        #endregion
+
+        #region Research / Get train information
         public Carbin GetCarbin(int carbinNo)
         {
             return Carbins[carbinNo - 1];
@@ -43,6 +55,16 @@
             var stationData = Stations.First(i => i.StationName == station);
             return stationData.LeaveTime;
         }
+        public bool IsNoRunDay(DateOnly date)
+        {
+            return _noRunDate.Contains(date);
+        }
+
+        public StationInfo GetStationInfo(string startStation)
+        {
+            return Stations.First(i=>i.StationName == startStation);
+        }
+        #endregion
     }
     public partial class TrainData
     {
@@ -57,12 +79,12 @@
             區間快車
         }
     }
-    public class TrainTime
+    public class StationInfo
     {
         public string StationName;
         public TimeOnly ArriveTime;
         public TimeOnly LeaveTime;
-        public TrainTime(string name, TimeOnly arrive, TimeOnly leave)
+        public StationInfo(string name, TimeOnly arrive, TimeOnly leave)
         {
             StationName = name;
             ArriveTime = arrive;
