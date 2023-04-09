@@ -8,11 +8,12 @@ namespace DomainTest
 {
     public class TrainResearchTests
     {
-        ITrainPersistant TrainStore = new FakeTrainDb();
+        ITrainPersistant TrainStore;
         TicketOperator ticketOperation;
-        [OneTimeSetUp]
+        [SetUp]
         public void Setup()
         {
+            TrainStore = new FakeTrainDb();
             var db = TrainStore as FakeTrainDb;
             db.InsertTestData();
             //add train 219
@@ -27,14 +28,12 @@ namespace DomainTest
             StationInfo kaohsiung = new StationInfo(Kaohsiung, new TimeOnly(10, 13), new TimeOnly(10, 15));
             var Train = new TrainData(
                 trainNo,
-                TrainData.TrainType.自強, null,
+                TrainData.TrainType.自強, false, null,
                 new Carbin[] { carbin1, carbin2, carbin3 },
                 new StationInfo[] { taipei, banqiao, taoyuan, taichung, kaohsiung }
                 );
             TrainStore.AddTrain(Train);
             ticketOperation = new TicketOperator(TrainStore);
-
-
         }
 
         [Test]
@@ -88,6 +87,18 @@ namespace DomainTest
             Assert.IsNotNull(trains.FirstOrDefault(i => i.TrainID == "511"));
         }
         [Test]
-        public void GetTrainsByStation() { }
+        public void GetTrainsByStation()
+        {
+            //arrange
+            string station = "taichung";
+            DateOnly date = new DateOnly(2023, 4, 9);
+            //act
+            var trains = TrainStore.GetTrainsByStation(station, date);
+            //assert
+            Assert.AreEqual(3, trains.Count());
+            Assert.IsNotNull(trains.FirstOrDefault(i => i.TrainID == "219"));
+            Assert.IsNotNull(trains.FirstOrDefault(i => i.TrainID == "2193"));
+            Assert.IsNotNull(trains.FirstOrDefault(i => i.TrainID == "273"));
+        }
     }
 }

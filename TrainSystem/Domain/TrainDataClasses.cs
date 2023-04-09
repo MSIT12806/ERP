@@ -14,11 +14,13 @@
         public TrainType Type;
         public List<StationInfo> Stations;
         public List<Carbin> Carbins;
+        public bool IsClockwise;
         #region Set train information
-        public TrainData(string trainID, TrainType type, HashSet<DateOnly> noRunDayList, IEnumerable<Carbin> carbins, IEnumerable<StationInfo> stationList)
+        public TrainData(string trainID, TrainType type, bool isClockwise, HashSet<DateOnly> noRunDayList, IEnumerable<Carbin> carbins, IEnumerable<StationInfo> stationList)
         {
             TrainID = trainID;
             Type = type;
+            IsClockwise = isClockwise;
             NoRunDate = noRunDayList == null ? NoRunDate : new HashSet<DateOnly>(noRunDayList);
             Carbins = new List<Carbin>(carbins);
             Stations = new List<StationInfo>(stationList);
