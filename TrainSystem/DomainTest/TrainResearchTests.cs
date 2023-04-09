@@ -10,9 +10,11 @@ namespace DomainTest
     {
         ITrainPersistant TrainStore = new FakeTrainDb();
         TicketOperator ticketOperation;
-        [SetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
+            var db = TrainStore as FakeTrainDb;
+            db.InsertTestData();
             //add train 219
             string trainNo = "219";
             Carbin carbin1 = new Carbin(trainNo, 16, 1);
@@ -25,6 +27,7 @@ namespace DomainTest
             StationInfo kaohsiung = new StationInfo(Kaohsiung, new TimeOnly(10, 13), new TimeOnly(10, 15));
             var Train = new TrainData(
                 trainNo,
+                TrainData.TrainType.自強, null,
                 new Carbin[] { carbin1, carbin2, carbin3 },
                 new StationInfo[] { taipei, banqiao, taoyuan, taichung, kaohsiung }
                 );
@@ -40,5 +43,51 @@ namespace DomainTest
             var train = TrainStore.GetTrain("219");
             Assert.AreEqual("219", train.TrainID);
         }
+
+        [Test]
+        public void GetTrainsByIDTest()
+        {
+            //arrange: 
+
+            //act
+            var trains = TrainStore.GetTrainsByID("219", new DateOnly(2023, 4, 9));
+
+            //assert
+            Assert.AreEqual(1, trains.Count());
+        }
+
+        [Test]
+        public void GetTrainsByIDTest_IsNotRunDate()
+        {
+            //arrange: 
+            var train219 = TrainStore.GetTrain("219");
+            train219.AddNoRunDate(new DateOnly(2023, 4, 9));
+            TrainStore.EditTrain(train219);
+
+            //act
+            var trains = TrainStore.GetTrainsByID("219", new DateOnly(2023, 4, 9));
+
+            //assert
+            Assert.AreEqual(0, trains.Count());
+        }
+        [Test]
+        public void GetTrainsByTime()
+        {
+            //arrange
+            string startStation = "taipei";
+            string targetStation = "banqiao";
+            DateOnly date = new DateOnly(2023, 4, 9);
+            TimeOnly startTime = new TimeOnly(6, 0);
+            TimeOnly endTime = new TimeOnly(12, 0);
+            char searchType = 'S';
+            //act
+            var trains = TrainStore.GetTrainsByTime(startStation, targetStation, date, searchType, startTime, endTime);
+            //assert
+            Assert.AreEqual(2, trains.Count());
+            Assert.IsNotNull(trains.FirstOrDefault(i => i.TrainID == "219"));
+            Assert.IsNotNull(trains.FirstOrDefault(i => i.TrainID == "511"));
+        }
+        [Test]
+        public void GetTrainsByStation() { }
     }
 }

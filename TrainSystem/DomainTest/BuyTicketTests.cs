@@ -24,6 +24,7 @@ namespace DomainTest
             StationInfo kaohsiung = new StationInfo(Kaohsiung, new TimeOnly(10, 13), new TimeOnly(10, 15));
             var emptyTrain = new TrainData(
                 trainNo,
+                TrainData.TrainType.自強, null,
                 new Carbin[] { carbin1, carbin2, carbin3 },
                 new StationInfo[] { taipei, banqiao, taoyuan, taichung, kaohsiung }
                 );

@@ -10,24 +10,26 @@
     public partial class TrainData
     {
         public string TrainID;
-        public HashSet<DateOnly> _noRunDate = new HashSet<DateOnly>();
+        public HashSet<DateOnly> NoRunDate = new HashSet<DateOnly>();
         public TrainType Type;
         public List<StationInfo> Stations;
         public List<Carbin> Carbins;
         #region Set train information
-        public TrainData(string trainID, IEnumerable<Carbin> carbins, IEnumerable<StationInfo> stationList)
+        public TrainData(string trainID, TrainType type, HashSet<DateOnly> noRunDayList, IEnumerable<Carbin> carbins, IEnumerable<StationInfo> stationList)
         {
             TrainID = trainID;
-            Carbins = carbins.ToList();
-            Stations = stationList.ToList();
+            Type = type;
+            NoRunDate = noRunDayList == null ? NoRunDate : new HashSet<DateOnly>(noRunDayList);
+            Carbins = new List<Carbin>(carbins);
+            Stations = new List<StationInfo>(stationList);
         }
         public void AddNoRunDate(DateOnly date)
         {
-            _noRunDate.Add(date);
+            NoRunDate.Add(date);
         }
         public void RemoveNoRunDate(DateOnly date)
         {
-            _noRunDate.Remove(date);
+            NoRunDate.Remove(date);
         }
         #endregion
 
@@ -57,12 +59,12 @@
         }
         public bool IsNoRunDay(DateOnly date)
         {
-            return _noRunDate.Contains(date);
+            return NoRunDate.Contains(date);
         }
 
         public StationInfo GetStationInfo(string startStation)
         {
-            return Stations.First(i=>i.StationName == startStation);
+            return Stations.First(i => i.StationName == startStation);
         }
         #endregion
     }
@@ -131,15 +133,15 @@
         public int SeatNo { get; private set; }
         public int Carbin { get; private set; }
         public char State;
-        public bool CanSell => Sold == Empty;
+        public bool CanSell => State == Empty;
         public string SeatID => SeatNo.ToString();
         public string GetNeigborSeatID() { return ""; }
         public bool IsWindowSeat() { return false; }
     }
     public partial class Seat
     {
-        public static readonly char Empty = 'N';
-        public static readonly char Book = 'B';
-        public static readonly char Sold = 'Y';
+        public static char Empty => 'N';
+        public static char Book => 'B';
+        public static char Sold => 'Y';
     }
 }
