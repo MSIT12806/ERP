@@ -15,7 +15,7 @@ namespace DomainTest
         {
             TrainStore = new FakeTrainDb();
             var db = TrainStore as FakeTrainDb;
-            db.InsertTestData();
+            FakeDataFunction.InjectTestData(db);
             //add train 219
             string trainNo = "219";
             Carbin carbin1 = new Carbin(trainNo, 16, 1);

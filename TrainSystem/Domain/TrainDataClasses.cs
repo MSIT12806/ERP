@@ -1,4 +1,6 @@
-﻿namespace Train
+﻿using Microsoft.EntityFrameworkCore.Metadata;
+
+namespace Train
 {
     public abstract class TrainDataOperator
     {
