@@ -11,10 +11,14 @@ using static Domain_Train.StationData;
 
 namespace Domain_Train.dev
 {
-    public class EF : DbContext, ITrainPersistant
+    public class TrainEF : DbContext, ITrainPersistant
     {
+        public TrainEF(DbContextOptions<TrainEF> options):base(options) { }
         public DbSet<TrainData> TrainDatas { get; set; }
-
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseInMemoryDatabase("TestDatabase");
+        }
         public void AddTrain(TrainData train)
         {
             TrainDatas.Add(train);

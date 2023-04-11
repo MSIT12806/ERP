@@ -1,5 +1,6 @@
 using Domain_Train;
 using Domain_Train.dev;
+using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Train;
 using static Domain_Train.StationData;
@@ -10,12 +11,16 @@ namespace DomainTest
     {
         ITrainPersistant TrainStore;
         TicketOperator ticketOperation;
+        //DbContextOptions<TrainEF> Options;
         [SetUp]
         public void Setup()
         {
+            //EF 毛一堆...
+            //Options = new DbContextOptionsBuilder<TrainEF>().UseInMemoryDatabase("TestDatabase").Options;
+            //TrainStore = new TrainEF(Options);
+
             TrainStore = new FakeTrainDb();
-            var db = TrainStore as FakeTrainDb;
-            FakeDataFunction.InjectTestData(db);
+            FakeDataFunction.InjectTestData(TrainStore);
             //add train 219
             string trainNo = "219";
             Carbin carbin1 = new Carbin(trainNo, 16, 1);
