@@ -70,6 +70,11 @@ namespace Train
         {
             return Stations.First(i => i.StationName == startStation);
         }
+
+        internal IEnumerable<Seat> GetFreeSeats(string startStation, string targetStation, DateTime dateTime)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
     }
     public partial class TrainData
@@ -143,6 +148,11 @@ namespace Train
         public bool IsWindowSeat() { return false; }
 
         internal bool IsNeighbourSeatFree()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal decimal BookThisSeat(string startStation, string targetStation, TrainData.TrainType type)
         {
             throw new NotImplementedException();
         }
