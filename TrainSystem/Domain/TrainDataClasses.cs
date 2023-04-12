@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Domain_Train;
+using Microsoft.EntityFrameworkCore.Metadata;
+using static Domain_Train.Station;
 
 namespace Train
 {
@@ -13,19 +15,29 @@ namespace Train
     {
         public string TrainID;
         public HashSet<DateOnly> NoRunDate = new HashSet<DateOnly>();
+        public TrunkLine TrunkLine;
         public TrainType Type;
         public List<StationInfo> Stations;
         public List<Carbin> Carbins;
         public bool IsClockwise;
         #region Set train information
-        public TrainData(string trainID, TrainType type, bool isClockwise, HashSet<DateOnly> noRunDayList, IEnumerable<Carbin> carbins, IEnumerable<StationInfo> stationList)
+        public TrainData(string trainID, Station.TrunkLine trunkLine, TrainType type, bool isClockwise, HashSet<DateOnly> noRunDayList, IEnumerable<Carbin> carbins, IEnumerable<StationInfo> stationList)
         {
             TrainID = trainID;
+            TrunkLine = trunkLine;
             Type = type;
             IsClockwise = isClockwise;
             NoRunDate = noRunDayList == null ? NoRunDate : new HashSet<DateOnly>(noRunDayList);
             Carbins = new List<Carbin>(carbins);
             Stations = new List<StationInfo>(stationList);
+
+            foreach (var c in Carbins)
+            {
+                foreach (var seat in c.Seats)
+                {
+                    seat.EmptySeatInitialize(stationList.Select(i => StationDatas.GetStationNo(i.StationName, trunkLine)).ToArray());
+                }
+            }
         }
         public void AddNoRunDate(DateOnly date)
         {
@@ -41,15 +53,6 @@ namespace Train
         public Carbin GetCarbin(int carbinNo)
         {
             return Carbins[carbinNo - 1];
-        }
-        public Seat SellFreeSeat(int carbin, int seat)
-        {
-            var carb = GetCarbin(carbin);
-            var r = carb.GetSeat(seat);
-            if (r.CanSell)
-                return r;
-
-            throw new InvalidOperationException("this seat can not be sold");
         }
         public TimeOnly ArriveTime(string station)
         {
@@ -71,7 +74,12 @@ namespace Train
             return Stations.First(i => i.StationName == startStation);
         }
 
-        internal IEnumerable<Seat> GetFreeSeats(string startStation, string targetStation, DateTime dateTime)
+        internal IEnumerable<Seat> GetUnsoldSeats(string startStation, string targetStation, TrainType type, DateTime dateTime)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal Seat GetUnsoldSeat(string startStation, string targetStation, TrainType type, DateTime dateTime)
         {
             throw new NotImplementedException();
         }
@@ -93,11 +101,13 @@ namespace Train
     public class StationInfo
     {
         public string StationName;
+        public int StationNo;
         public TimeOnly ArriveTime;
         public TimeOnly LeaveTime;
-        public StationInfo(string name, TimeOnly arrive, TimeOnly leave)
+        public StationInfo(string name, Domain_Train.Station.TrunkLine trunkLine, TimeOnly arrive, TimeOnly leave)
         {
-            StationName = name;
+            StationName = (name);
+            StationNo = StationDatas.GetStationNo(name, trunkLine);
             ArriveTime = arrive;
             LeaveTime = leave;
         }
@@ -109,9 +119,9 @@ namespace Train
         private int _seatCount;
         private string _trainNo;
 
-        public Carbin(string trainNo, int seatCount, int carbinNo)
+        public Carbin(string trainID, int seatCount, int carbinNo)
         {
-            this._trainNo = trainNo;
+            this._trainNo = trainID;
             this._seatCount = seatCount;
             Seats = new List<Seat>();
             for (int i = 1; i <= seatCount; i++)
@@ -129,20 +139,33 @@ namespace Train
     {
         public Seat(int seatNo, int carbin)
         {
-            EmptySeatInitialize(seatNo, carbin);
-        }
-
-        private void EmptySeatInitialize(int seatNo, int carbin)
-        {
             SeatNo = seatNo;
             Carbin = carbin;
-            State = Empty;
+        }
+
+        public bool Initialized { get; private set; } = false;
+        public void EmptySeatInitialize(IEnumerable<int> stationNos)
+        {
+            if (Initialized) throw new InvalidOperationException("Seat 已經初始化了");
+
+            foreach (var no in stationNos)
+            {
+                States.Add(no, 'E');
+            }
+            Initialized = true;
         }
 
         public int SeatNo { get; private set; }
         public int Carbin { get; private set; }
-        public char State;
-        public bool CanSell => State == Empty;
+        public Dictionary<int, char> States = new Dictionary<int, char>();
+        public bool CanSell(params int[] stationNos)
+        {
+            foreach (var no in stationNos)
+            {
+                if (States[no] != Empty) return false;
+            }
+            return true;
+        }
         public string SeatID => SeatNo.ToString();
         public Seat GetNeighbourSeat() { return null; }
         public bool IsWindowSeat() { return false; }
@@ -152,8 +175,10 @@ namespace Train
             throw new NotImplementedException();
         }
 
-        internal decimal BookThisSeat(string startStation, string targetStation, TrainData.TrainType type)
+        internal decimal BookThisSeat(int startStation, int targetStation)
         {
+
+            if (!CanSell(startStation, targetStation)) throw new Notify("此座位不能販售");
             throw new NotImplementedException();
         }
     }

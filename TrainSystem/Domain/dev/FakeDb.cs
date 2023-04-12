@@ -40,7 +40,7 @@ namespace Domain_Train.dev
         {
             var r = new List<TrainData>();
             var train = GetTrain(trainID);
-            if (!train.IsNoRunDay(date)) r.Add(new TrainData(train.TrainID, train.Type, false, train.NoRunDate, train.Carbins, train.Stations));
+            if (!train.IsNoRunDay(date)) r.Add(new TrainData(train.TrainID,train.TrunkLine, train.Type, false, train.NoRunDate, train.Carbins, train.Stations));
 
             return r;
         }
@@ -97,14 +97,14 @@ namespace Domain_Train.dev
         public TrainData GetTrain(string trainID)
         {
             var train = dbContainer[trainID];
-            return new TrainData(train.TrainID, train.Type, false, null, train.Carbins, train.Stations);
+            return new TrainData(train.TrainID, train.TrunkLine, train.Type, false, null, train.Carbins, train.Stations);
         }
 
         public IEnumerable<TrainData> GetTrainsByID(string trainID, DateOnly date)
         {
             var r = new List<TrainData>();
             var train = dbContainer[trainID];
-            if (!train.IsNoRunDay(date)) r.Add(new TrainData(train.TrainID, train.Type, false, train.NoRunDate, train.Carbins, train.Stations));
+            if (!train.IsNoRunDay(date)) r.Add(new TrainData(train.TrainID, train.TrunkLine, train.Type, false, train.NoRunDate, train.Carbins, train.Stations));
 
             return r;
         }

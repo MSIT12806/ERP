@@ -24,7 +24,7 @@ namespace Train
 
             StationInfo startStationInfo = train.GetStationInfo(startStation);
             StationInfo targetStationInfo = train.GetStationInfo(targetStation);
-            IEnumerable<Seat> freeSeats = train.GetFreeSeats(startStation, targetStation, dateTime);
+            IEnumerable<Seat> freeSeats = train.GetUnsoldSeats(startStation, targetStation,train.Type, dateTime);
             var freeSeatCount = freeSeats.Count();//如果要這樣搞，是不是就得lock住?
             if (freeSeatCount < ticketCount) throw new Notify("沒有足夠的座位");
 
@@ -34,8 +34,8 @@ namespace Train
                 {
                     Seat seat1 = freeSeats.First(i => i.IsNeighbourSeatFree());
                     Seat seat2 = seat1.GetNeighbourSeat();
-                    result.Add(new Ticket(startStation, startStationInfo.ArriveTime, targetStation, targetStationInfo.ArriveTime, trainID, seat1.Carbin, seat1.SeatNo, dateTime, seat1.BookThisSeat(startStation, targetStation, train.Type)));
-                    result.Add(new Ticket(startStation, startStationInfo.ArriveTime, targetStation, targetStationInfo.ArriveTime, trainID, seat2.Carbin, seat2.SeatNo, dateTime, seat1.BookThisSeat(startStation, targetStation, train.Type)));
+                    result.Add(new Ticket(startStation, startStationInfo.ArriveTime, targetStation, targetStationInfo.ArriveTime, trainID, seat1.Carbin, seat1.SeatNo, dateTime, seat1.BookThisSeat(startStationInfo.StationNo, targetStationInfo.StationNo)));
+                    result.Add(new Ticket(startStation, startStationInfo.ArriveTime, targetStation, targetStationInfo.ArriveTime, trainID, seat2.Carbin, seat2.SeatNo, dateTime, seat1.BookThisSeat(startStationInfo.StationNo, targetStationInfo.StationNo)));
                     ticketCount -= 2;
 
                 }
@@ -44,7 +44,7 @@ namespace Train
 
                     var seat = freeSeats.FirstOrDefault(i => !i.IsNeighbourSeatFree());
                     seat = seat == null ? freeSeats.FirstOrDefault(i => i.IsNeighbourSeatFree()) : seat;
-                    result.Add(new Ticket(startStation, startStationInfo.ArriveTime, targetStation, targetStationInfo.ArriveTime, trainID, seat.Carbin, seat.SeatNo, dateTime, seat.BookThisSeat(startStation, targetStation, train.Type)));
+                    result.Add(new Ticket(startStation, startStationInfo.ArriveTime, targetStation, targetStationInfo.ArriveTime, trainID, seat.Carbin, seat.SeatNo, dateTime, seat.BookThisSeat(startStationInfo.StationNo, targetStationInfo.StationNo)));
                     ticketCount -= 1;
                 }
             }
@@ -54,9 +54,12 @@ namespace Train
         {
             GetNowWhenDateTimeIsDefault(ref dateTime);
             TrainData train = Repository.GetTrain(trainID);
-            var seatToBeSold = train.SellFreeSeat(1, 1);
-            Ticket result = new Ticket(startStation, train.LeaveTime(startStation), targetStation, train.ArriveTime(targetStation), train.TrainID, seatToBeSold.Carbin, seatToBeSold.SeatNo, dateTime, 100);
-            seatToBeSold.State = Seat.Book;
+
+            StationInfo startStationInfo = train.GetStationInfo(startStation);
+            StationInfo targetStationInfo = train.GetStationInfo(targetStation);
+            Seat unsoldSeat = train.GetUnsoldSeat(startStation, targetStation, train.Type,dateTime);
+            Ticket result = new Ticket(startStation, train.LeaveTime(startStation), targetStation, train.ArriveTime(targetStation), train.TrainID, unsoldSeat.Carbin, unsoldSeat.SeatNo, dateTime, 100);
+            unsoldSeat.BookThisSeat(startStationInfo.StationNo, targetStationInfo.StationNo);
             return result;
         }
 
