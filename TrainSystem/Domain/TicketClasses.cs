@@ -33,13 +33,14 @@ namespace Train
         public class Ticket
         {
             public string StartStation;
-            public TimeOnly StartTime;
+            public TimeOnly StartTime;//給乘客看的
             public string TargetStation;
-            public TimeOnly ArriveTime;
+            public TimeOnly ArriveTime;//給乘客看的
             public string TrainID;
             public string Carbin;
             public string Seat;
-            public DateTime ExpirationDate;
+            public char State;//購票狀態
+            public DateTime ExpirationDate;//訂票到期日 / 乘車到期日
             public decimal Price;
             public Ticket(string startStation, TimeOnly startTime, string targetStation, TimeOnly arriveTime, string trainID, string carbin, string seat, DateTime expirationDate, decimal price)
             {

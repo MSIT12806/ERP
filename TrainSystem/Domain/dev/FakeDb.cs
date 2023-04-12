@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using System.Xml;
 using Train;
-using static Domain_Train.StationData;
+using static Domain_Train.StationDatas;
 
 namespace Domain_Train.dev
 {
