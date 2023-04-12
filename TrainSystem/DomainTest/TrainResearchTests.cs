@@ -3,7 +3,7 @@ using Domain_Train.dev;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Train;
-using static Domain_Train.StationData;
+using static Domain_Train.StationDatas;
 
 namespace DomainTest
 {
@@ -26,11 +26,11 @@ namespace DomainTest
             Carbin carbin1 = new Carbin(trainNo, 16, 1);
             Carbin carbin2 = new Carbin(trainNo, 16, 2);
             Carbin carbin3 = new Carbin(trainNo, 16, 3);
-            StationInfo taipei = new StationInfo(Taipei, new TimeOnly(6, 0), new TimeOnly(6, 0));
-            StationInfo banqiao = new StationInfo(Banqiao, new TimeOnly(6, 15), new TimeOnly(6, 17));
-            StationInfo taoyuan = new StationInfo(Taoyuan, new TimeOnly(6, 55), new TimeOnly(6, 57));
-            StationInfo taichung = new StationInfo(Taichung, new TimeOnly(7, 44), new TimeOnly(6, 46));
-            StationInfo kaohsiung = new StationInfo(Kaohsiung, new TimeOnly(10, 13), new TimeOnly(10, 15));
+            StationInfo taipei = new StationInfo(Taipei.StationName, new TimeOnly(6, 0), new TimeOnly(6, 0));
+            StationInfo banqiao = new StationInfo(Banqiao.StationName, new TimeOnly(6, 15), new TimeOnly(6, 17));
+            StationInfo taoyuan = new StationInfo(Taoyuan.StationName, new TimeOnly(6, 55), new TimeOnly(6, 57));
+            StationInfo taichung = new StationInfo(Taichung.StationName, new TimeOnly(7, 44), new TimeOnly(6, 46));
+            StationInfo kaohsiung = new StationInfo(Kaohsiung.StationName, new TimeOnly(10, 13), new TimeOnly(10, 15));
             var Train = new TrainData(
                 trainNo,
                 TrainData.TrainType.自強, false, null,

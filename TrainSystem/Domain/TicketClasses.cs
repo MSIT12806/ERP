@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain_Train;
+using System;
 
 namespace Train
 {
@@ -9,12 +10,52 @@ namespace Train
         {
             this.Repository = repository;
         }
+        /// <summary>
+        /// 錯誤：回傳通知
+        /// </summary>
+        /// <exception cref="Notify">回傳通知</exception>
+        public IEnumerable<Ticket> BuyTickets(string trainID, string startStation, string targetStation, int ticketCount, DateTime dateTime = default(DateTime))
+        {
+            //兩兩售票
+            //如果剩下單張，就盡量以鄰座已售出的賣
+            List<Ticket> result = new List<Ticket>();
+            TrainData train = Repository.GetTrainsByID(trainID, DateOnly.FromDateTime(dateTime)).FirstOrDefault();
+            if (train == null) return result;
+
+            StationInfo startStationInfo = train.GetStationInfo(startStation);
+            StationInfo targetStationInfo = train.GetStationInfo(targetStation);
+            IEnumerable<Seat> freeSeats = train.GetFreeSeats(startStation, targetStation, dateTime);
+            var freeSeatCount = freeSeats.Count();//如果要這樣搞，是不是就得lock住?
+            if (freeSeatCount < ticketCount) throw new Notify("沒有足夠的座位");
+
+            while (ticketCount > 0)
+            {
+                if (ticketCount > 1)
+                {
+                    Seat seat1 = freeSeats.First(i => i.IsNeighbourSeatFree());
+                    Seat seat2 = seat1.GetNeighbourSeat();
+                    result.Add(new Ticket(startStation, startStationInfo.ArriveTime, targetStation, targetStationInfo.ArriveTime, trainID, seat1.Carbin, seat1.SeatNo, dateTime, seat1.BookThisSeat(startStation, targetStation, train.Type)));
+                    result.Add(new Ticket(startStation, startStationInfo.ArriveTime, targetStation, targetStationInfo.ArriveTime, trainID, seat2.Carbin, seat2.SeatNo, dateTime, seat1.BookThisSeat(startStation, targetStation, train.Type)));
+                    ticketCount -= 2;
+
+                }
+                else
+                {
+
+                    var seat = freeSeats.FirstOrDefault(i => !i.IsNeighbourSeatFree());
+                    seat = seat == null ? freeSeats.FirstOrDefault(i => i.IsNeighbourSeatFree()) : seat;
+                    result.Add(new Ticket(startStation, startStationInfo.ArriveTime, targetStation, targetStationInfo.ArriveTime, trainID, seat.Carbin, seat.SeatNo, dateTime, seat.BookThisSeat(startStation, targetStation, train.Type)));
+                    ticketCount -= 1;
+                }
+            }
+            return result;
+        }
         public Ticket BuyTicket(string trainID, string startStation, string targetStation, int carbin, int seat, DateTime dateTime = default(DateTime))
         {
             GetNowWhenDateTimeIsDefault(ref dateTime);
             TrainData train = Repository.GetTrain(trainID);
             var seatToBeSold = train.SellFreeSeat(1, 1);
-            Ticket result = new Ticket(startStation, train.LeaveTime(startStation), targetStation, train.ArriveTime(targetStation), train.TrainID, seatToBeSold.Carbin.ToString(), seatToBeSold.SeatID, dateTime, 100);
+            Ticket result = new Ticket(startStation, train.LeaveTime(startStation), targetStation, train.ArriveTime(targetStation), train.TrainID, seatToBeSold.Carbin, seatToBeSold.SeatNo, dateTime, 100);
             seatToBeSold.State = Seat.Book;
             return result;
         }
@@ -37,12 +78,12 @@ namespace Train
             public string TargetStation;
             public TimeOnly ArriveTime;//給乘客看的
             public string TrainID;
-            public string Carbin;
-            public string Seat;
+            public int Carbin;
+            public int Seat;
             public char State;//購票狀態
             public DateTime ExpirationDate;//訂票到期日 / 乘車到期日
             public decimal Price;
-            public Ticket(string startStation, TimeOnly startTime, string targetStation, TimeOnly arriveTime, string trainID, string carbin, string seat, DateTime expirationDate, decimal price)
+            public Ticket(string startStation, TimeOnly startTime, string targetStation, TimeOnly arriveTime, string trainID, int carbin, int seat, DateTime expirationDate, decimal price)
             {
                 this.StartStation = startStation;
                 this.StartTime = startTime;

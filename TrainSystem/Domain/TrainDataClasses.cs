@@ -139,8 +139,13 @@ namespace Train
         public char State;
         public bool CanSell => State == Empty;
         public string SeatID => SeatNo.ToString();
-        public string GetNeigborSeatID() { return ""; }
+        public Seat GetNeighbourSeat() { return null; }
         public bool IsWindowSeat() { return false; }
+
+        internal bool IsNeighbourSeatFree()
+        {
+            throw new NotImplementedException();
+        }
     }
     public partial class Seat
     {
