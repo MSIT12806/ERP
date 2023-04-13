@@ -87,6 +87,7 @@ namespace Train
         public Seat GetUnsoldSeat(int startStation, int targetStation, DateOnly date)
         {
             var seat = Carbins.SelectMany(i => i.Seats.Where(s => s.CanSell(startStation, targetStation, date))).FirstOrDefault(); //把linq結構拆出來寫
+            if (seat == null) throw new Notify("票已售罄");
             return seat;
         }
         #endregion
@@ -161,6 +162,7 @@ namespace Train
             {
                 keyStatePairs.Add(no, Seat.Empty);
             }
+            States.Add(date, keyStatePairs);
         }
 
         public int SeatNo { get; private set; }
@@ -228,9 +230,9 @@ namespace Train
             for (int i = min; i <= max; i++)
             {
                 if (States.ContainsKey(date) && States[date].ContainsKey(i))
-                    if (States[date][i] != Empty) return 0;
+                    States[date][i] = Book;
             }
-            return 0;
+            return 10;
         }
     }
     public partial class Seat

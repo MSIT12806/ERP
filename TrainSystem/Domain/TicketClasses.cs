@@ -56,7 +56,6 @@ namespace Train
             TrainData train = TrainFinder.GetTrainByID(trainID, date);
             TrainRunToStationInfo startStationInfo = train.GetStationInfo(startStation, date);
             TrainRunToStationInfo targetStationInfo = train.GetStationInfo(targetStation, date);
-            //todo: 如果是過去日期或是今天已經過站了，就不准賣。
             if (date < DateOnly.FromDateTime(MyDateTimeProvider.Ins.Now())) throw new Notify("不可販售過期的票");
             Seat unsoldSeat = train.GetUnsoldSeat(startStationInfo.StationNo, targetStationInfo.StationNo, date);
             Ticket result = new Ticket(startStation, train.LeaveTime(startStation, date), targetStation, train.ArriveTime(targetStation, date), train.TrainID, unsoldSeat.Carbin, unsoldSeat.SeatNo, date, 100);
