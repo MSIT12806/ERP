@@ -6,10 +6,11 @@ namespace DomainTest
 {
     public class StationResearchTests
     {
+        IStationPersistant StationStore;
         [SetUp]
         public void Setup()
         {
-            StationDatas.Initialize();
+            StationStore = new FakeStationDB();
         }
 
         [Test]
@@ -17,7 +18,7 @@ namespace DomainTest
         {
             int BanqiaoClockwiseNo = 1141;
 
-            Assert.AreEqual(BanqiaoClockwiseNo, StationDatas.GetStationNo(StationDatas.Banqiao.StationName, Station.TrunkLine.環島線順));
+            Assert.AreEqual(BanqiaoClockwiseNo, StationStore.GetStationNo(StationDatas.Banqiao.StationName, Station.TrunkLine.環島線順));
         }
 
     }

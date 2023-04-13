@@ -62,50 +62,7 @@ namespace Domain_Train
         public static readonly Station Taichung = new Station("taichung",LevelType.一等, (TrunkLine.環島線逆, 1040), (TrunkLine.環島線順, 1111));
         public static readonly Station Kaohsiung = new Station("kaohsiung", LevelType.特等, (TrunkLine.環島線逆, 1080), (TrunkLine.環島線順, 1081));
         public static readonly Station Hualian = new Station("hualian", LevelType.特等, (TrunkLine.環島線逆, 1111), (TrunkLine.環島線順, 1041));
-        public static List<Station> AllStations = new List<Station>();
-        static bool _initialized = false;
-        public static void Initialize()
-        {
-            if (_initialized) return;
-
-            // 取得 StationDatas.Station 型別的所有欄位
-            var fields = typeof(StationDatas).GetFields(BindingFlags.Static | BindingFlags.Public);
-
-            // 將所有欄位的值加入 AllStations 列表當中
-            foreach (var field in fields)
-            {
-                if (field.FieldType == typeof(Station))
-                {
-                    StationDatas.AllStations.Add((Station)field.GetValue(null));
-                }
-            }
-            _initialized = true;
-        }
-        public static Station GetStation(string stationName)
-        {
-            return AllStations.First(i=>i.StationName == stationName);
-        }
-        public static int GetStationNo(string stationName, TrunkLine trunkLine)
-        {
-            var station = AllStations.First(i => i.StationName == stationName);
-            var stationNo = station.StationNo[trunkLine];
-            return stationNo;
-        }
-        public static IEnumerable<int> GetStationNoList(string start, string end, TrainType trainType, TrunkLine trunkLine)
-        {
-            var sStation = GetStation(start);
-            var eStation = GetStation(end);
-            IEnumerable<int> list = null;
-            if (eStation.StationNo[trunkLine] > sStation.StationNo[trunkLine])
-            {
-                list = AllStations.Where(s => s.StationNo[trunkLine] >= sStation.StationNo[trunkLine] && s.StationNo[trunkLine] <= eStation.StationNo[trunkLine]).Select(i=>i.StationNo[trunkLine]);
-            }
-            else
-            {
-                list = AllStations.Where(s => s.StationNo[trunkLine] <= sStation.StationNo[trunkLine] && s.StationNo[trunkLine] >= eStation.StationNo[trunkLine]).Select(i => i.StationNo[trunkLine]);
-            }
-
-            return list;
-        }
+       
+     
     }
 }

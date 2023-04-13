@@ -11,6 +11,7 @@ namespace DomainTest
     {
         ITrainPersistant TrainStore;
         TicketOperator ticketOperation;
+        IStationPersistant StationStore;
         //DbContextOptions<TrainEF> Options;
         [SetUp]
         public void Setup()
@@ -18,7 +19,7 @@ namespace DomainTest
             //EF 毛一堆...
             //Options = new DbContextOptionsBuilder<TrainEF>().UseInMemoryDatabase("TestDatabase").Options;
             //TrainStore = new TrainEF(Options);
-            StationDatas.Initialize();
+            StationStore = new FakeStationDB();
             TrainStore = new FakeTrainDb();
             FakeDataFunction.InjectTestData(TrainStore);
             //add train 219
@@ -27,11 +28,11 @@ namespace DomainTest
             Carbin carbin1 = new Carbin(trainNo, 16, 1);
             Carbin carbin2 = new Carbin(trainNo, 16, 2);
             Carbin carbin3 = new Carbin(trainNo, 16, 3);
-            StationInfo taipei = new StationInfo(Taipei.StationName, k, new TimeOnly(6, 0), new TimeOnly(6, 0));
-            StationInfo banqiao = new StationInfo(Banqiao.StationName, k, new TimeOnly(6, 15), new TimeOnly(6, 17));
-            StationInfo taoyuan = new StationInfo(Taoyuan.StationName, k, new TimeOnly(6, 55), new TimeOnly(6, 57));
-            StationInfo taichung = new StationInfo(Taichung.StationName, k, new TimeOnly(7, 44), new TimeOnly(6, 46));
-            StationInfo kaohsiung = new StationInfo(Kaohsiung.StationName, k, new TimeOnly(10, 13), new TimeOnly(10, 15));
+            StationInfo taipei = new StationInfo(Taipei.StationName, StationStore.GetStationNo(Taipei.StationName, k), new TimeOnly(6, 0), new TimeOnly(6, 0));
+            StationInfo banqiao = new StationInfo(Banqiao.StationName, StationStore.GetStationNo(Banqiao.StationName, k), new TimeOnly(6, 15), new TimeOnly(6, 17));
+            StationInfo taoyuan = new StationInfo(Taoyuan.StationName, StationStore.GetStationNo(Taoyuan.StationName, k), new TimeOnly(6, 55), new TimeOnly(6, 57));
+            StationInfo taichung = new StationInfo(Taichung.StationName, StationStore.GetStationNo(Taichung.StationName, k), new TimeOnly(7, 44), new TimeOnly(6, 46));
+            StationInfo kaohsiung = new StationInfo(Kaohsiung.StationName, StationStore.GetStationNo(Kaohsiung.StationName, k), new TimeOnly(10, 13), new TimeOnly(10, 15));
             var Train = new TrainData(
                 trainNo,
                  k,

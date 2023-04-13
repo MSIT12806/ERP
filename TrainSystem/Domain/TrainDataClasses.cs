@@ -35,7 +35,7 @@ namespace Train
                 foreach (var seat in c.Seats)
                 {
                     seat.EmptySeatInitialize(
-                        stationList.Select(i => StationDatas.GetStationNo(i.StationName, trunkLine)).ToArray()
+                        stationList.Select(i => i.StationNo).ToArray()
                         );
                 }
             }
@@ -111,10 +111,10 @@ namespace Train
         public int StationNo;
         public TimeOnly ArriveTime;
         public TimeOnly LeaveTime;
-        public StationInfo(string name, Domain_Train.Station.TrunkLine trunkLine, TimeOnly arrive, TimeOnly leave)
+        public StationInfo(string name,int no, TimeOnly arrive, TimeOnly leave)
         {
             StationName = (name);
-            StationNo = StationDatas.GetStationNo(name, trunkLine);
+            StationNo = no;
             ArriveTime = arrive;
             LeaveTime = leave;
         }
