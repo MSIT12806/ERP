@@ -18,7 +18,7 @@ namespace DomainTest
             //EF 毛一堆...
             //Options = new DbContextOptionsBuilder<TrainEF>().UseInMemoryDatabase("TestDatabase").Options;
             //TrainStore = new TrainEF(Options);
-
+            StationDatas.Initialize();
             TrainStore = new FakeTrainDb();
             FakeDataFunction.InjectTestData(TrainStore);
             //add train 219

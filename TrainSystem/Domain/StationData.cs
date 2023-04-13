@@ -58,10 +58,10 @@ namespace Domain_Train
     {
         public static readonly Station Taipei = new Station("taipei",LevelType.特等, (TrunkLine.環島線逆, 1001), (TrunkLine.環島線順, 1001));
         public static readonly Station Banqiao = new Station("banqiao",LevelType.一等, (TrunkLine.環島線逆, 1011), (TrunkLine.環島線順, 1141));
-        public static readonly Station Taoyuan = new Station("taoyuan",LevelType.一等, (TrunkLine.環島線逆, 1011), (TrunkLine.環島線順, 1125));
-        public static readonly Station Taichung = new Station("taichung",LevelType.一等, (TrunkLine.環島線逆, 1011), (TrunkLine.環島線順, 1111));
-        public static readonly Station Kaohsiung = new Station("kaohsiung", LevelType.特等, (TrunkLine.環島線逆, 1011), (TrunkLine.環島線順, 1081));
-        public static readonly Station Hualian = new Station("hualian", LevelType.特等, (TrunkLine.環島線逆, 1011), (TrunkLine.環島線順, 1041));
+        public static readonly Station Taoyuan = new Station("taoyuan",LevelType.一等, (TrunkLine.環島線逆, 1025), (TrunkLine.環島線順, 1125));
+        public static readonly Station Taichung = new Station("taichung",LevelType.一等, (TrunkLine.環島線逆, 1040), (TrunkLine.環島線順, 1111));
+        public static readonly Station Kaohsiung = new Station("kaohsiung", LevelType.特等, (TrunkLine.環島線逆, 1080), (TrunkLine.環島線順, 1081));
+        public static readonly Station Hualian = new Station("hualian", LevelType.特等, (TrunkLine.環島線逆, 1111), (TrunkLine.環島線順, 1041));
         public static List<Station> AllStations = new List<Station>();
         static bool _initialized = false;
         public static void Initialize()

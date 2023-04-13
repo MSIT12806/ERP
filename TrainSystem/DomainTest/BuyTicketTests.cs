@@ -12,6 +12,7 @@ namespace DomainTest
         [SetUp]
         public void Setup()
         {
+            StationDatas.Initialize();
             //set empty train
             string trainNo = "219";
             var k = Domain_Train.Station.TrunkLine.環島線逆;
