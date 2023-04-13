@@ -9,44 +9,42 @@ namespace Train
         public abstract void EditTrainData();
         public abstract void RemoveTrainData();
     }
-
+    /// <summary>
+    /// 班次資料
+    /// </summary>
     public partial class TrainData
     {
+        #region Values
         public string TrainID;
-        public HashSet<DateOnly> NoRunDate = new HashSet<DateOnly>();
+        public Dictionary<DateOnly, List<TrainRunToStationInfo>> RunInfos = new Dictionary<DateOnly, List<TrainRunToStationInfo>>();
         public TrunkLine TrunkLine;
+        public bool IsForward;//forward or back
         public TrainType Type;
-        public List<StationInfo> Stations;
         public List<Carbin> Carbins;
-        public bool IsClockwise;
+        #endregion
         #region Set train information
-        public TrainData(string trainID, Station.TrunkLine trunkLine, TrainType type, bool isClockwise, HashSet<DateOnly> noRunDayList, IEnumerable<Carbin> carbins, IEnumerable<StationInfo> stationList)
+        public TrainData(string trainID, Station.TrunkLine trunkLine, TrainType type, bool isForward, Dictionary<DateOnly, List<TrainRunToStationInfo>> runInfos, IEnumerable<Carbin> carbins)
         {
             TrainID = trainID;
             TrunkLine = trunkLine;
             Type = type;
-            IsClockwise = isClockwise;
-            NoRunDate = noRunDayList == null ? NoRunDate : new HashSet<DateOnly>(noRunDayList);
+            IsForward = isForward;
+            this.RunInfos = runInfos == null ? this.RunInfos : new Dictionary<DateOnly, List<TrainRunToStationInfo>>(runInfos);
             Carbins = new List<Carbin>(carbins.Select(c => c.GetNewOne()));
-            Stations = new List<StationInfo>(stationList);
 
             foreach (var c in Carbins)
             {
                 foreach (var seat in c.Seats)
                 {
-                    seat.EmptySeatInitialize(
-                        stationList.Select(i => i.StationNo).ToArray()
-                        );
+                    foreach (var date in runInfos.Keys)
+                    {
+                        seat.EmptySeatInitialize(
+                    runInfos[date].Select(i => i.StationNo).ToArray()
+                    );
+                    }
+
                 }
             }
-        }
-        public void AddNoRunDate(DateOnly date)
-        {
-            NoRunDate.Add(date);
-        }
-        public void RemoveNoRunDate(DateOnly date)
-        {
-            NoRunDate.Remove(date);
         }
         #endregion
 
@@ -55,24 +53,24 @@ namespace Train
         {
             return Carbins[carbinNo - 1];
         }
-        public TimeOnly ArriveTime(string station)
+        public TimeOnly ArriveTime(string station, DateOnly date)
         {
-            var stationData = Stations.First(i => i.StationName == station);
+            var stationData = RunInfos[date].First(i => i.StationName == station);
             return stationData.ArriveTime;
         }
-        public TimeOnly LeaveTime(string station)
+        public TimeOnly LeaveTime(string station, DateOnly date)
         {
-            var stationData = Stations.First(i => i.StationName == station);
+            var stationData = RunInfos[date].First(i => i.StationName == station);
             return stationData.LeaveTime;
         }
         public bool IsNoRunDay(DateOnly date)
         {
-            return NoRunDate.Contains(date);
+            return RunInfos.ContainsKey(date);
         }
 
-        public StationInfo GetStationInfo(string startStation)
+        public TrainRunToStationInfo GetStationInfo(string startStation, DateOnly date)
         {
-            return Stations.First(i => i.StationName == startStation);
+            return RunInfos[date].First(i => i.StationName == startStation);
         }
 
         public IEnumerable<Seat> GetUnsoldSeats(string startStation, string targetStation, TrainType type, DateTime dateTime)
@@ -105,13 +103,13 @@ namespace Train
             區間快車
         }
     }
-    public class StationInfo
+    public class TrainRunToStationInfo
     {
         public string StationName;
         public int StationNo;
         public TimeOnly ArriveTime;
         public TimeOnly LeaveTime;
-        public StationInfo(string name,int no, TimeOnly arrive, TimeOnly leave)
+        public TrainRunToStationInfo(string name, int no, TimeOnly arrive, TimeOnly leave)
         {
             StationName = (name);
             StationNo = no;

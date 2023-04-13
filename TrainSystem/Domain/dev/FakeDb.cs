@@ -13,7 +13,7 @@ namespace Domain_Train.dev
 {
     public class TrainEF : DbContext, ITrainPersistant
     {
-        public TrainEF(DbContextOptions<TrainEF> options):base(options) { }
+        public TrainEF(DbContextOptions<TrainEF> options) : base(options) { }
         public DbSet<TrainData> TrainDatas { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -36,49 +36,15 @@ namespace Domain_Train.dev
             return TrainDatas.Find(trainID);
         }
 
-        public IEnumerable<TrainData> GetTrainsByID(string trainID, DateOnly date)
-        {
-            var r = new List<TrainData>();
-            var train = GetTrain(trainID);
-            if (!train.IsNoRunDay(date)) r.Add(new TrainData(train.TrainID,train.TrunkLine, train.Type, false, train.NoRunDate, train.Carbins, train.Stations));
-
-            return r;
-        }
-
-        public IEnumerable<TrainData> GetTrainsByStation(string stationName, DateOnly dateTime)
-        {
-            var r = TrainDatas.Where(
-                        i => i.IsNoRunDay(dateTime) == false &&
-                        i.Stations.Exists(s => s.StationName == stationName));
-            return r;
-        }
-
-        public IEnumerable<TrainData> GetTrainsByTime(string startStation, string targetStation, DateOnly date, char scaleType, TimeOnly startTime, TimeOnly endTime)
-        {
-            var trains = TrainDatas.Where(i => i.IsNoRunDay(date) == false);
-            trains = trains.Where(i =>
-            i.Stations.Exists(s => s.StationName == startStation) &&
-            i.Stations.Exists(s => s.StationName == targetStation)
-            );
-            trains = trains.Where(i => i.GetStationInfo(startStation).LeaveTime < i.GetStationInfo(targetStation).ArriveTime);
-            if (scaleType == 'S')
-            {
-                trains = trains.Where(i => i.GetStationInfo(startStation).LeaveTime >= startTime)
-                               .Where(i => i.GetStationInfo(startStation).LeaveTime <= endTime);
-            }
-            else if (scaleType == 'E')
-            {
-                trains = trains.Where(i => i.GetStationInfo(targetStation).ArriveTime >= startTime)
-                               .Where(i => i.GetStationInfo(targetStation).ArriveTime <= endTime);
-            }
-            var r = trains.ToList();
-            return r;
-        }
-
         public void RemoveTrain(string trainID)
         {
             TrainDatas.Remove(GetTrain(trainID));
             this.SaveChanges();
+        }
+
+        public IEnumerable<TrainData> GetTrains()
+        {
+            return TrainDatas;
         }
     }
     public class FakeTrainDb : ITrainPersistant
@@ -97,46 +63,12 @@ namespace Domain_Train.dev
         public TrainData GetTrain(string trainID)
         {
             var train = dbContainer[trainID];
-            return new TrainData(train.TrainID, train.TrunkLine, train.Type, false, null, train.Carbins, train.Stations);
+            return new TrainData(train.TrainID, train.TrunkLine, train.Type, false, train.RunInfos, train.Carbins);
         }
 
-        public IEnumerable<TrainData> GetTrainsByID(string trainID, DateOnly date)
+        public IEnumerable<TrainData> GetTrains()
         {
-            var r = new List<TrainData>();
-            var train = dbContainer[trainID];
-            if (!train.IsNoRunDay(date)) r.Add(new TrainData(train.TrainID, train.TrunkLine, train.Type, false, train.NoRunDate, train.Carbins, train.Stations));
-
-            return r;
-        }
-
-        public IEnumerable<TrainData> GetTrainsByStation(string stationName, DateOnly dateTime)
-        {
-            var r = dbContainer.Values.Where(
-                i => i.IsNoRunDay(dateTime) == false &&
-                i.Stations.Exists(s => s.StationName == stationName));
-            return r;
-        }
-
-        public IEnumerable<TrainData> GetTrainsByTime(string startStation, string targetStation, DateOnly date, char scaleType, TimeOnly startTime, TimeOnly endTime)
-        {
-            var trains = dbContainer.Values.Where(i => i.IsNoRunDay(date) == false);
-            trains = trains.Where(i =>
-            i.Stations.Exists(s => s.StationName == startStation) &&
-            i.Stations.Exists(s => s.StationName == targetStation)
-            );
-            trains = trains.Where(i => i.GetStationInfo(startStation).LeaveTime < i.GetStationInfo(targetStation).ArriveTime);
-            if (scaleType == 'S')
-            {
-                trains = trains.Where(i => i.GetStationInfo(startStation).LeaveTime >= startTime)
-                               .Where(i => i.GetStationInfo(startStation).LeaveTime <= endTime);
-            }
-            else if (scaleType == 'E')
-            {
-                trains = trains.Where(i => i.GetStationInfo(targetStation).ArriveTime >= startTime)
-                               .Where(i => i.GetStationInfo(targetStation).ArriveTime <= endTime);
-            }
-            var r = trains.ToList();
-            return r;
+            return dbContainer.Values;
         }
 
         public void RemoveTrain(string trainID)

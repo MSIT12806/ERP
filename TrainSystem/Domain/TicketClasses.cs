@@ -5,10 +5,10 @@ namespace Train
 {
     public class TicketOperator
     {
-        ITrainPersistant Repository;
-        public TicketOperator(ITrainPersistant repository)
+        TrainFinder TrainFinder;
+        public TicketOperator(TrainFinder finder)
         {
-            this.Repository = repository;
+            this.TrainFinder = finder;
         }
         /// <summary>
         /// 錯誤：回傳通知
@@ -19,11 +19,11 @@ namespace Train
             //兩兩售票
             //如果剩下單張，就盡量以鄰座已售出的賣
             List<Ticket> result = new List<Ticket>();
-            TrainData train = Repository.GetTrainsByID(trainID, DateOnly.FromDateTime(dateTime)).FirstOrDefault();
+            TrainData train = TrainFinder.GetTrainsByID(trainID, DateOnly.FromDateTime(dateTime)).FirstOrDefault();
             if (train == null) return result;
 
-            StationInfo startStationInfo = train.GetStationInfo(startStation);
-            StationInfo targetStationInfo = train.GetStationInfo(targetStation);
+            TrainRunToStationInfo startStationInfo = train.GetStationInfo(startStation, DateOnly.FromDateTime(dateTime));
+            TrainRunToStationInfo targetStationInfo = train.GetStationInfo(targetStation, DateOnly.FromDateTime(dateTime));
             IEnumerable<Seat> freeSeats = train.GetUnsoldSeats(startStationInfo.StationNo, targetStationInfo.StationNo, train.Type, dateTime);
             var freeSeatCount = freeSeats.Count();//如果要這樣搞，是不是就得lock住?
             if (freeSeatCount < ticketCount) throw new Notify("沒有足夠的座位");
@@ -50,15 +50,15 @@ namespace Train
             }
             return result;
         }
-        public Ticket BuyTicket(string trainID, string startStation, string targetStation, int carbin, int seat, DateTime dateTime = default(DateTime))
+        public Ticket BuyTicket(string trainID, string startStation, string targetStation, DateTime dateTime = default(DateTime))
         {
             GetNowWhenDateTimeIsDefault(ref dateTime);
-            TrainData train = Repository.GetTrain(trainID);
-
-            StationInfo startStationInfo = train.GetStationInfo(startStation);
-            StationInfo targetStationInfo = train.GetStationInfo(targetStation);
-            Seat unsoldSeat = train.GetUnsoldSeat(startStationInfo.StationNo, targetStationInfo.StationNo, train.Type,dateTime);
-            Ticket result = new Ticket(startStation, train.LeaveTime(startStation), targetStation, train.ArriveTime(targetStation), train.TrainID, unsoldSeat.Carbin, unsoldSeat.SeatNo, dateTime, 100);
+            TrainData train = TrainFinder.GetTrain(trainID);
+            TrainRunToStationInfo startStationInfo = train.GetStationInfo(startStation, DateOnly.FromDateTime(dateTime));
+            TrainRunToStationInfo targetStationInfo = train.GetStationInfo(targetStation, DateOnly.FromDateTime(dateTime));
+            //todo: 如果是過去日期或是今天已經過站了，就不准賣。
+            Seat unsoldSeat = train.GetUnsoldSeat(startStationInfo.StationNo, targetStationInfo.StationNo, train.Type, dateTime);
+            Ticket result = new Ticket(startStation, train.LeaveTime(startStation, DateOnly.FromDateTime(dateTime)), targetStation, train.ArriveTime(targetStation, DateOnly.FromDateTime(dateTime)), train.TrainID, unsoldSeat.Carbin, unsoldSeat.SeatNo, dateTime, 100);
             unsoldSeat.BookThisSeat(startStationInfo.StationNo, targetStationInfo.StationNo);
             return result;
         }
