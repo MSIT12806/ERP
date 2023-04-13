@@ -13,9 +13,14 @@ namespace DomainTest
         ITrainPersistant TrainStore;
         TicketOperator ticketOperation;
         IStationPersistant StationStore;
+        IDateTimeProvider dateTimeProvider;
         [SetUp]
         public void Setup()
         {
+            dateTimeProvider = Substitute.For<IDateTimeProvider>();
+            dateTimeProvider.Now().Returns(new DateTime(2023, 4, 12, 3, 4, 5));
+            MyDateTimeProvider.Ins = dateTimeProvider;
+
             StationStore = new FakeStationDB();
             //set empty train
             string trainNo = "219";
@@ -56,13 +61,13 @@ namespace DomainTest
             var ticket = ticketOperation.BuyTicket("219", Taipei.StationName, Taichung.StationName);
             Assert.AreEqual(Taipei.StationName, ticket.StartStation);
             Assert.AreEqual(Taichung.StationName, ticket.TargetStation);
-            Assert.AreEqual(DateOnly.FromDateTime(DateTime.Now), (ticket.ExpirationDate));
+            Assert.AreEqual(DateOnly.FromDateTime(dateTimeProvider.Now()), (ticket.ExpirationDate));
         }
 
         [Test]
         public void BuyTicketTest()
         {
-            var dateAfter3 = DateTime.Now.AddDays(3);
+            var dateAfter3 = dateTimeProvider.Now().AddDays(3);
             var ticket = ticketOperation.BuyTicket("219", Taipei.StationName, Taichung.StationName, DateOnly.FromDateTime(dateAfter3));
             Assert.AreEqual(Taipei.StationName, ticket.StartStation);
             Assert.AreEqual(Taichung.StationName, ticket.TargetStation);
@@ -72,7 +77,7 @@ namespace DomainTest
         [Test]
         public void BuyTicketTest_PastTime()
         {
-            var dateAfter3 = DateTime.Now.AddDays(-3);
+            var dateAfter3 = dateTimeProvider.Now().AddDays(-3);
             Assert.Throws<Notify>(() => ticketOperation.BuyTicket("219", Taipei.StationName, Taichung.StationName, DateOnly.FromDateTime(dateAfter3)));
         }
     }

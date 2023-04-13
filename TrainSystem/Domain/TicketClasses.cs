@@ -44,7 +44,7 @@ namespace Train
 
                     var seat = freeSeats.FirstOrDefault(i => !i.IsNeighbourSeatFree());
                     seat = seat == null ? freeSeats.FirstOrDefault(i => i.IsNeighbourSeatFree()) : seat;
-                    result.Add(new Ticket(startStation, startStationInfo.ArriveTime, targetStation, targetStationInfo.ArriveTime, trainID, seat.Carbin, seat.SeatNo, date, seat.BookThisSeat(startStationInfo.StationNo, targetStationInfo.StationNo,date)));
+                    result.Add(new Ticket(startStation, startStationInfo.ArriveTime, targetStation, targetStationInfo.ArriveTime, trainID, seat.Carbin, seat.SeatNo, date, seat.BookThisSeat(startStationInfo.StationNo, targetStationInfo.StationNo, date)));
                     ticketCount -= 1;
                 }
             }
@@ -57,6 +57,7 @@ namespace Train
             TrainRunToStationInfo startStationInfo = train.GetStationInfo(startStation, date);
             TrainRunToStationInfo targetStationInfo = train.GetStationInfo(targetStation, date);
             //todo: 如果是過去日期或是今天已經過站了，就不准賣。
+            if (date < DateOnly.FromDateTime(MyDateTimeProvider.Ins.Now())) throw new Notify("不可販售過期的票");
             Seat unsoldSeat = train.GetUnsoldSeat(startStationInfo.StationNo, targetStationInfo.StationNo, date);
             Ticket result = new Ticket(startStation, train.LeaveTime(startStation, date), targetStation, train.ArriveTime(targetStation, date), train.TrainID, unsoldSeat.Carbin, unsoldSeat.SeatNo, date, 100);
             unsoldSeat.BookThisSeat(startStationInfo.StationNo, targetStationInfo.StationNo, date);
@@ -71,7 +72,8 @@ namespace Train
 
         private void GetNowWhenDateTimeIsDefault(ref DateOnly date)
         {
-            date = date == default(DateOnly) ? DateOnly.FromDateTime(DateTime.Now) : date;
+
+            date = date == default(DateOnly) ? DateOnly.FromDateTime(MyDateTimeProvider.Ins.Now()) : date;
         }
 
         public class Ticket

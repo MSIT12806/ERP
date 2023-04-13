@@ -66,7 +66,7 @@ namespace Train
         }
         public bool IsNoRunDay(DateOnly date)
         {
-            return RunInfos.ContainsKey(date);
+            return !RunInfos.ContainsKey(date);
         }
 
         public TrainRunToStationInfo GetStationInfo(string startStation, DateOnly date)
