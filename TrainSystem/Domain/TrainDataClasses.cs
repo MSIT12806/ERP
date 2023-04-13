@@ -1,4 +1,5 @@
 ﻿using Domain_Train;
+using System.Collections.Generic;
 using static Domain_Train.Station;
 
 namespace Train
@@ -38,7 +39,7 @@ namespace Train
                 {
                     foreach (var date in runInfos.Keys)
                     {
-                        seat.EmptySeatInitialize(
+                        seat.EmptySeatInitialize(date,
                     runInfos[date].Select(i => i.StationNo).ToArray()
                     );
                     }
@@ -73,19 +74,19 @@ namespace Train
             return RunInfos[date].First(i => i.StationName == startStation);
         }
 
-        public IEnumerable<Seat> GetUnsoldSeats(string startStation, string targetStation, TrainType type, DateTime dateTime)
+        public IEnumerable<Seat> GetUnsoldSeats(string startStation, string targetStation, TrainType type, DateOnly date)
         {
             throw new NotImplementedException();
         }
-        public IEnumerable<Seat> GetUnsoldSeats(int startStation, int targetStation, TrainType type, DateTime dateTime)
+        public IEnumerable<Seat> GetUnsoldSeats(int startStation, int targetStation, DateOnly date)
         {
-            var seats = Carbins.SelectMany(i => i.Seats.Where(s => s.CanSell(startStation, targetStation)));//把linq結構拆出來寫
+            var seats = Carbins.SelectMany(i => i.Seats.Where(s => s.CanSell(startStation, targetStation, date)));//把linq結構拆出來寫
             return seats;
         }
 
-        public Seat GetUnsoldSeat(int startStation, int targetStation, TrainType type, DateTime dateTime)
+        public Seat GetUnsoldSeat(int startStation, int targetStation, DateOnly date)
         {
-            var seat = Carbins.SelectMany(i => i.Seats.Where(s => s.CanSell(startStation, targetStation))).FirstOrDefault(); //把linq結構拆出來寫
+            var seat = Carbins.SelectMany(i => i.Seats.Where(s => s.CanSell(startStation, targetStation, date))).FirstOrDefault(); //把linq結構拆出來寫
             return seat;
         }
         #endregion
@@ -151,29 +152,28 @@ namespace Train
             Carbin = carbin;
         }
 
-        public bool Initialized { get; private set; } = false;
-        public void EmptySeatInitialize(IEnumerable<int> stationNos)
+        public void EmptySeatInitialize(DateOnly date, IEnumerable<int> stationNos)
         {
-            if (Initialized) throw new InvalidOperationException("Seat 已經初始化了");
+            if (States.ContainsKey(date)) throw new InvalidOperationException("這天的 Seat 已經初始化了");
 
+            Dictionary<int, char> keyStatePairs = new Dictionary<int, char>();
             foreach (var no in stationNos)
             {
-                States.Add(no, Seat.Empty);
+                keyStatePairs.Add(no, Seat.Empty);
             }
-            Initialized = true;
         }
 
         public int SeatNo { get; private set; }
         public int Carbin { get; private set; }
-        public Dictionary<int, char> States = new Dictionary<int, char>();
-        public bool CanSell(int startStation, int targetStation)
+        public Dictionary<DateOnly, Dictionary<int, char>> States = new Dictionary<DateOnly, Dictionary<int, char>>();
+        public bool CanSell(int startStation, int targetStation, DateOnly date)
         {
             int max = Math.Max(startStation, targetStation);
             int min = Math.Min(startStation, targetStation);
             for (int i = min; i <= max; i++)
             {
-                if (States.ContainsKey(i))
-                    if (States[i] != Empty) return false;
+                if (States.ContainsKey(date) && States[date].ContainsKey(i))
+                    if (States[date][i] != Empty) return false;
             }
             return true;
         }
@@ -186,7 +186,7 @@ namespace Train
             throw new NotImplementedException();
         }
 
-        public decimal BookThisSeat(int startStation, int targetStation)
+        public decimal BookThisSeat(int startStation, int targetStation, DateOnly date)
         {
             /*
 票價計算原則
@@ -227,8 +227,8 @@ namespace Train
             int min = Math.Min(startStation, targetStation);
             for (int i = min; i <= max; i++)
             {
-                if (States.ContainsKey(i))
-                    if (States[i] != Empty) return 0;
+                if (States.ContainsKey(date) && States[date].ContainsKey(i))
+                    if (States[date][i] != Empty) return 0;
             }
             return 0;
         }

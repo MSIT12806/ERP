@@ -27,13 +27,13 @@ namespace Train
             TrainPersistant = trainPersistant;
         }
 
-        public IEnumerable<TrainData> GetTrainsByID(string trainID, DateOnly date)
+        public TrainData GetTrainByID(string trainID, DateOnly date)
         {
             var r = new List<TrainData>();
             var train = TrainPersistant.GetTrain(trainID);
-            if (!train.IsNoRunDay(date)) r.Add(new TrainData(train.TrainID, train.TrunkLine, train.Type, false, train.RunInfos, train.Carbins));
+            if (train.IsNoRunDay(date)) throw new Notify("本列車今日未行駛");
 
-            return r;
+            return train;
         }
         public IEnumerable<TrainData> GetTrainsByTime(string startStation, string targetStation, DateOnly date, char scaleType, TimeOnly startTime, TimeOnly endTime)
         {

@@ -37,7 +37,8 @@ namespace DomainTest
                 );
             TrainStore = NSubstitute.Substitute.For<ITrainPersistant>();
             TrainStore.GetTrain(trainNo).Returns(emptyTrain);
-            ticketOperation = new TicketOperator(TrainStore);
+            var trainFinder = new TrainFinder(TrainStore);
+            ticketOperation = new TicketOperator(trainFinder);
 
             //set full train
         }
@@ -55,24 +56,24 @@ namespace DomainTest
             var ticket = ticketOperation.BuyTicket("219", Taipei.StationName, Taichung.StationName);
             Assert.AreEqual(Taipei.StationName, ticket.StartStation);
             Assert.AreEqual(Taichung.StationName, ticket.TargetStation);
-            Assert.AreEqual(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(ticket.ExpirationDate));
+            Assert.AreEqual(DateOnly.FromDateTime(DateTime.Now), (ticket.ExpirationDate));
         }
 
         [Test]
         public void BuyTicketTest()
         {
             var dateAfter3 = DateTime.Now.AddDays(3);
-            var ticket = ticketOperation.BuyTicket("219", Taipei.StationName, Taichung.StationName, dateAfter3);
+            var ticket = ticketOperation.BuyTicket("219", Taipei.StationName, Taichung.StationName, DateOnly.FromDateTime(dateAfter3));
             Assert.AreEqual(Taipei.StationName, ticket.StartStation);
             Assert.AreEqual(Taichung.StationName, ticket.TargetStation);
-            Assert.AreEqual(DateOnly.FromDateTime(dateAfter3), DateOnly.FromDateTime(ticket.ExpirationDate));
+            Assert.AreEqual(DateOnly.FromDateTime(dateAfter3), (ticket.ExpirationDate));
         }
 
         [Test]
         public void BuyTicketTest_PastTime()
         {
             var dateAfter3 = DateTime.Now.AddDays(-3);
-            Assert.Throws<Notify>(ticketOperation.BuyTicket("219", Taipei.StationName, Taichung.StationName, dateAfter3));
+            Assert.Throws<Notify>(() => ticketOperation.BuyTicket("219", Taipei.StationName, Taichung.StationName, DateOnly.FromDateTime(dateAfter3)));
         }
     }
 }

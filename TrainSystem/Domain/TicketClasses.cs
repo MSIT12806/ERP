@@ -14,17 +14,17 @@ namespace Train
         /// 錯誤：回傳通知
         /// </summary>
         /// <exception cref="Notify">回傳通知</exception>
-        public IEnumerable<Ticket> BuyTickets(string trainID, string startStation, string targetStation, int ticketCount, DateTime dateTime = default(DateTime))
+        public IEnumerable<Ticket> BuyTickets(string trainID, string startStation, string targetStation, int ticketCount, DateOnly date = default(DateOnly))
         {
             //兩兩售票
             //如果剩下單張，就盡量以鄰座已售出的賣
             List<Ticket> result = new List<Ticket>();
-            TrainData train = TrainFinder.GetTrainsByID(trainID, DateOnly.FromDateTime(dateTime)).FirstOrDefault();
+            TrainData train = TrainFinder.GetTrainByID(trainID, date);
             if (train == null) return result;
 
-            TrainRunToStationInfo startStationInfo = train.GetStationInfo(startStation, DateOnly.FromDateTime(dateTime));
-            TrainRunToStationInfo targetStationInfo = train.GetStationInfo(targetStation, DateOnly.FromDateTime(dateTime));
-            IEnumerable<Seat> freeSeats = train.GetUnsoldSeats(startStationInfo.StationNo, targetStationInfo.StationNo, train.Type, dateTime);
+            TrainRunToStationInfo startStationInfo = train.GetStationInfo(startStation, date);
+            TrainRunToStationInfo targetStationInfo = train.GetStationInfo(targetStation, date);
+            IEnumerable<Seat> freeSeats = train.GetUnsoldSeats(startStationInfo.StationNo, targetStationInfo.StationNo, date);
             var freeSeatCount = freeSeats.Count();//如果要這樣搞，是不是就得lock住?
             if (freeSeatCount < ticketCount) throw new Notify("沒有足夠的座位");
 
@@ -34,8 +34,8 @@ namespace Train
                 {
                     Seat seat1 = freeSeats.First(i => i.IsNeighbourSeatFree());
                     Seat seat2 = seat1.GetNeighbourSeat();
-                    result.Add(new Ticket(startStation, startStationInfo.ArriveTime, targetStation, targetStationInfo.ArriveTime, trainID, seat1.Carbin, seat1.SeatNo, dateTime, seat1.BookThisSeat(startStationInfo.StationNo, targetStationInfo.StationNo)));
-                    result.Add(new Ticket(startStation, startStationInfo.ArriveTime, targetStation, targetStationInfo.ArriveTime, trainID, seat2.Carbin, seat2.SeatNo, dateTime, seat1.BookThisSeat(startStationInfo.StationNo, targetStationInfo.StationNo)));
+                    result.Add(new Ticket(startStation, startStationInfo.ArriveTime, targetStation, targetStationInfo.ArriveTime, trainID, seat1.Carbin, seat1.SeatNo, date, seat1.BookThisSeat(startStationInfo.StationNo, targetStationInfo.StationNo, date)));
+                    result.Add(new Ticket(startStation, startStationInfo.ArriveTime, targetStation, targetStationInfo.ArriveTime, trainID, seat2.Carbin, seat2.SeatNo, date, seat1.BookThisSeat(startStationInfo.StationNo, targetStationInfo.StationNo, date)));
                     ticketCount -= 2;
 
                 }
@@ -44,22 +44,22 @@ namespace Train
 
                     var seat = freeSeats.FirstOrDefault(i => !i.IsNeighbourSeatFree());
                     seat = seat == null ? freeSeats.FirstOrDefault(i => i.IsNeighbourSeatFree()) : seat;
-                    result.Add(new Ticket(startStation, startStationInfo.ArriveTime, targetStation, targetStationInfo.ArriveTime, trainID, seat.Carbin, seat.SeatNo, dateTime, seat.BookThisSeat(startStationInfo.StationNo, targetStationInfo.StationNo)));
+                    result.Add(new Ticket(startStation, startStationInfo.ArriveTime, targetStation, targetStationInfo.ArriveTime, trainID, seat.Carbin, seat.SeatNo, date, seat.BookThisSeat(startStationInfo.StationNo, targetStationInfo.StationNo,date)));
                     ticketCount -= 1;
                 }
             }
             return result;
         }
-        public Ticket BuyTicket(string trainID, string startStation, string targetStation, DateTime dateTime = default(DateTime))
+        public Ticket BuyTicket(string trainID, string startStation, string targetStation, DateOnly date = default(DateOnly))
         {
-            GetNowWhenDateTimeIsDefault(ref dateTime);
-            TrainData train = TrainFinder.GetTrain(trainID);
-            TrainRunToStationInfo startStationInfo = train.GetStationInfo(startStation, DateOnly.FromDateTime(dateTime));
-            TrainRunToStationInfo targetStationInfo = train.GetStationInfo(targetStation, DateOnly.FromDateTime(dateTime));
+            GetNowWhenDateTimeIsDefault(ref date);
+            TrainData train = TrainFinder.GetTrainByID(trainID, date);
+            TrainRunToStationInfo startStationInfo = train.GetStationInfo(startStation, date);
+            TrainRunToStationInfo targetStationInfo = train.GetStationInfo(targetStation, date);
             //todo: 如果是過去日期或是今天已經過站了，就不准賣。
-            Seat unsoldSeat = train.GetUnsoldSeat(startStationInfo.StationNo, targetStationInfo.StationNo, train.Type, dateTime);
-            Ticket result = new Ticket(startStation, train.LeaveTime(startStation, DateOnly.FromDateTime(dateTime)), targetStation, train.ArriveTime(targetStation, DateOnly.FromDateTime(dateTime)), train.TrainID, unsoldSeat.Carbin, unsoldSeat.SeatNo, dateTime, 100);
-            unsoldSeat.BookThisSeat(startStationInfo.StationNo, targetStationInfo.StationNo);
+            Seat unsoldSeat = train.GetUnsoldSeat(startStationInfo.StationNo, targetStationInfo.StationNo, date);
+            Ticket result = new Ticket(startStation, train.LeaveTime(startStation, date), targetStation, train.ArriveTime(targetStation, date), train.TrainID, unsoldSeat.Carbin, unsoldSeat.SeatNo, date, 100);
+            unsoldSeat.BookThisSeat(startStationInfo.StationNo, targetStationInfo.StationNo, date);
             return result;
         }
 
@@ -69,9 +69,9 @@ namespace Train
             throw new NotImplementedException();
         }
 
-        private void GetNowWhenDateTimeIsDefault(ref DateTime dateTime)
+        private void GetNowWhenDateTimeIsDefault(ref DateOnly date)
         {
-            dateTime = dateTime == default(DateTime) ? DateTime.Now : dateTime;
+            date = date == default(DateOnly) ? DateOnly.FromDateTime(DateTime.Now) : date;
         }
 
         public class Ticket
@@ -84,9 +84,9 @@ namespace Train
             public int Carbin;
             public int Seat;
             public char State;//購票狀態
-            public DateTime ExpirationDate;//訂票到期日 / 乘車到期日
+            public DateOnly ExpirationDate;//訂票到期日 / 乘車到期日
             public decimal Price;
-            public Ticket(string startStation, TimeOnly startTime, string targetStation, TimeOnly arriveTime, string trainID, int carbin, int seat, DateTime expirationDate, decimal price)
+            public Ticket(string startStation, TimeOnly startTime, string targetStation, TimeOnly arriveTime, string trainID, int carbin, int seat, DateOnly expirationDate, decimal price)
             {
                 this.StartStation = startStation;
                 this.StartTime = startTime;

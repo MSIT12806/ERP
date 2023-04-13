@@ -1,6 +1,7 @@
 using Domain_Train;
 using Domain_Train.dev;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using NSubstitute;
 using Train;
 using static Domain_Train.StationDatas;
@@ -48,24 +49,21 @@ namespace DomainTest
             //arrange: 
 
             //act
-            var trains = _trainFinder.GetTrainsByID("219", new DateOnly(2023, 4, 9));
+            var train = _trainFinder.GetTrainByID("219", new DateOnly(2023, 4, 9));
 
             //assert
-            Assert.AreEqual(1, trains.Count());
+            Assert.AreEqual("219", train.TrainID);
         }
         [Test]
         public void GetTrainsByIDTest_IsNotRunDate()
         {
             //arrange: 
-            var train219 = _trainFinder.GetTrain("219");
-            train219.AddNoRunDate(new DateOnly(2023, 4, 9));
-            _trainFinder.EditTrain(train219);
 
             //act
-            var trains = _trainFinder.GetTrainsByID("219", new DateOnly(2023, 4, 9));
+
 
             //assert
-            Assert.AreEqual(0, trains.Count());
+            Assert.Throws<Notify>(()=>_trainFinder.GetTrainByID("219", new DateOnly(2023, 10, 10)));
         }
         [Test]
         public void GetTrainsByTime()
