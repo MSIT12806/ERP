@@ -74,15 +74,16 @@ namespace Train
             return RunInfos[date].First(i => i.StationName == startStation);
         }
 
-        public IEnumerable<Seat> GetUnsoldSeats(int startStation, int targetStation, DateOnly date)
+        public IEnumerable<Seat> GetUnsoldSeatsDescendingOrderByCarbinEmptySeatCount(int startStation, int targetStation, DateOnly date)
         {
             var seats = Carbins.SelectMany(i => i.Seats.Where(s => s.CanSell(startStation, targetStation, date)));//把linq結構拆出來寫
+            seats = seats.OrderByDescending(i => GetCarbin(i.Carbin).EmptySeatCount(startStation, targetStation, date));
             return seats;
         }
 
         public Seat GetUnsoldSeat(int startStation, int targetStation, DateOnly date)
         {
-            var seat = Carbins.SelectMany(i => i.Seats.Where(s => s.CanSell(startStation, targetStation, date))).FirstOrDefault(); //把linq結構拆出來寫
+            var seat = GetUnsoldSeatsDescendingOrderByCarbinEmptySeatCount(startStation, targetStation, date).FirstOrDefault();
             if (seat == null) throw new Notify("票已售罄");
             return seat;
         }
@@ -155,6 +156,11 @@ namespace Train
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        public int EmptySeatCount(int startNo, int targetNo, DateOnly date)
+        {
+            return Seats.Where(i => i.CanSell(startNo, targetNo, date)).Count();
         }
     }
     public partial class Seat

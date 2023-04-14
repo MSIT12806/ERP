@@ -25,7 +25,7 @@ namespace Train
 
             TrainRunToStationInfo startStationInfo = train.GetStationInfo(startStation, date);
             TrainRunToStationInfo targetStationInfo = train.GetStationInfo(targetStation, date);
-            IEnumerable<Seat> freeSeats = train.GetUnsoldSeats(startStationInfo.StationNo, targetStationInfo.StationNo, date);
+            IEnumerable<Seat> freeSeats = train.GetUnsoldSeatsDescendingOrderByCarbinEmptySeatCount(startStationInfo.StationNo, targetStationInfo.StationNo, date);
             var freeSeatCount = freeSeats.Count();//如果要這樣搞，是不是就得lock住?
             if (freeSeatCount < ticketCount) throw new Notify("沒有足夠的座位");
 

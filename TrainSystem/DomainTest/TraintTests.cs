@@ -121,7 +121,7 @@ namespace DomainTest
             var train = TrainStore.GetTrain("219");
             var seat = train.GetCarbin(1).GetSeat(1);
             //act
-            var unsoldSeats = train.GetUnsoldSeats(taipei.StationNo, taoyuan.StationNo, DateOnly.FromDateTime(MyDateTimeProvider.Ins.Now()));
+            var unsoldSeats = train.GetUnsoldSeatsDescendingOrderByCarbinEmptySeatCount(taipei.StationNo, taoyuan.StationNo, DateOnly.FromDateTime(MyDateTimeProvider.Ins.Now()));
             //assert
             Assert.IsTrue(seat.IsNeighbourSeatFree(unsoldSeats));
         }
@@ -134,7 +134,7 @@ namespace DomainTest
             var nSeat = train.GetCarbin(1).GetSeat(3);
             //act
             nSeat.BookThisSeat(taipei.StationNo, banqiao.StationNo, DateOnly.FromDateTime(MyDateTimeProvider.Ins.Now()));
-            var unsoldSeats = train.GetUnsoldSeats(taipei.StationNo, taoyuan.StationNo, DateOnly.FromDateTime(MyDateTimeProvider.Ins.Now()));
+            var unsoldSeats = train.GetUnsoldSeatsDescendingOrderByCarbinEmptySeatCount(taipei.StationNo, taoyuan.StationNo, DateOnly.FromDateTime(MyDateTimeProvider.Ins.Now()));
             //assert
             Assert.IsFalse(seat.IsNeighbourSeatFree(unsoldSeats));
         }
@@ -147,7 +147,7 @@ namespace DomainTest
             var nSeat = train.GetCarbin(1).GetSeat(3);
             //act
             nSeat.BookThisSeat(taoyuan.StationNo, taichung.StationNo, DateOnly.FromDateTime(MyDateTimeProvider.Ins.Now()));
-            var unsoldSeats = train.GetUnsoldSeats(taipei.StationNo, taoyuan.StationNo, DateOnly.FromDateTime(MyDateTimeProvider.Ins.Now()));
+            var unsoldSeats = train.GetUnsoldSeatsDescendingOrderByCarbinEmptySeatCount(taipei.StationNo, taoyuan.StationNo, DateOnly.FromDateTime(MyDateTimeProvider.Ins.Now()));
             //assert
             Assert.IsTrue(seat.IsNeighbourSeatFree(unsoldSeats));
         }

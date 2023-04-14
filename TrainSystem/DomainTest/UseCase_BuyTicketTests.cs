@@ -73,6 +73,14 @@ namespace DomainTest
             Assert.AreEqual(Taichung.StationName, ticket.TargetStation);
             Assert.AreEqual(DateOnly.FromDateTime(dateAfter3), (ticket.ExpirationDate));
         }
+        [Test]
+        public void BuyTicketTest_BuyAgainShouldNotInSameCarbin()
+        {
+            var dateAfter3 = dateTimeProvider.Now().AddDays(3);
+            var ticket1 = ticketOperation.BuyTicket("219", Taipei.StationName, Taichung.StationName, DateOnly.FromDateTime(dateAfter3));
+            var ticket2 = ticketOperation.BuyTicket("219", Taipei.StationName, Taichung.StationName, DateOnly.FromDateTime(dateAfter3));
+            Assert.AreNotEqual(ticket1.Carbin, ticket2.Carbin);
+        }
 
         [Test]
         public void BuyTicketTest_PastTime()
@@ -104,11 +112,16 @@ namespace DomainTest
             bool neighborseat = Seat.GetNeighbourSeatNo(t1.Seat) == t2.Seat;
             return sameCarbin && neighborseat;
         }
-        //[Test]
-        //public void BuyTicketTest_ThreeSeatThatTwoTogetherAddOne()
-        //{
-        //    Assert.Fail();
-        //}
+        [Test]
+        public void BuyTicketTest_ThreeSeatThatTwoTogetherAddOne()
+        {
+            var tickets = ticketOperation.BuyTickets("219", Taipei.StationName, Taichung.StationName, 3);
+            Assert.AreEqual(3, tickets.Count());
+            //var t1 = tickets.First();
+            //var t2 = tickets.First(i => i != t1);
+            //Assert.IsTrue(IsNeighborSeat(t1, t2));
+        }
+
         //[Test]
         //public void BuyTicketTest_WindowSide()
         //{
