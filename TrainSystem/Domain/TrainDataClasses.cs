@@ -74,10 +74,6 @@ namespace Train
             return RunInfos[date].First(i => i.StationName == startStation);
         }
 
-        public IEnumerable<Seat> GetUnsoldSeats(string startStation, string targetStation, TrainType type, DateOnly date)
-        {
-            throw new NotImplementedException();
-        }
         public IEnumerable<Seat> GetUnsoldSeats(int startStation, int targetStation, DateOnly date)
         {
             var seats = Carbins.SelectMany(i => i.Seats.Where(s => s.CanSell(startStation, targetStation, date)));//把linq結構拆出來寫
@@ -144,6 +140,22 @@ namespace Train
         {
             return Seats[seat - 1];//OutOfRangeException
         }
+
+        public Seat GetNeighbourSeat(int seat)
+        {
+            var calc = seat % 4;
+            switch (calc)
+            {
+                case 1:
+                case 2:
+                    return GetSeat(seat + 2);
+                case 3:
+                case 0:
+                    return GetSeat(seat - 2);
+                default:
+                    throw new NotImplementedException();
+            }
+        }
     }
     public partial class Seat
     {
@@ -172,6 +184,11 @@ namespace Train
         {
             int max = Math.Max(startStation, targetStation);
             int min = Math.Min(startStation, targetStation);
+
+            //微調 max 或是 min，讓 訂票不要包含到 目的地。
+            max = max == targetStation ? max - 1 : max;
+            min = min == targetStation ? min + 1 : min;
+
             for (int i = min; i <= max; i++)
             {
                 if (States.ContainsKey(date) && States[date].ContainsKey(i))
@@ -179,13 +196,34 @@ namespace Train
             }
             return true;
         }
-        public string SeatID => SeatNo.ToString();
-        public Seat GetNeighbourSeat() { return null; }
-        public bool IsWindowSeat() { return false; }
 
-        public bool IsNeighbourSeatFree()
+        public bool IsWindowSide()
         {
-            throw new NotImplementedException();
+            var calc = this.SeatNo % 4;
+            return calc == 1 || calc == 2;
+        }
+        public static int GetNeighbourSeatNo(int seatNo)
+        {
+            var calc = seatNo % 4;
+            switch (calc)
+            {
+                case 1:
+                case 2:
+                    return (seatNo + 2);
+                case 3:
+                case 0:
+                    return (seatNo - 2);
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+        public int GetNeighbourSeatNo()
+        {
+            return Seat.GetNeighbourSeatNo(SeatNo);
+        }
+        public bool IsNeighbourSeatFree(IEnumerable<Seat> freeSeats)
+        {
+            return freeSeats.Any(s => s.Carbin == this.Carbin && s.SeatNo == GetNeighbourSeatNo());
         }
 
         public decimal BookThisSeat(int startStation, int targetStation, DateOnly date)
@@ -227,6 +265,11 @@ namespace Train
             //if (!CanSell(startStation, targetStation)) throw new Notify("此座位不能販售"); 放給外面檢查
             int max = Math.Max(startStation, targetStation);
             int min = Math.Min(startStation, targetStation);
+
+            //微調 max 或是 min，讓 訂票不要包含到 目的地。
+            max = max == targetStation ? max - 1 : max;
+            min = min == targetStation ? min + 1 : min;
+
             for (int i = min; i <= max; i++)
             {
                 if (States.ContainsKey(date) && States[date].ContainsKey(i))

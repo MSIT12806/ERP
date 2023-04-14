@@ -8,7 +8,7 @@ using static Domain_Train.StationDatas;
 
 namespace DomainTest
 {
-    public class TrainResearchTests
+    public class UseCase_TrainResearchTests
     {
         TrainFinder _trainFinder;
         TicketOperator ticketOperation;
@@ -81,6 +81,22 @@ namespace DomainTest
             Assert.AreEqual(2, trains.Count());
             Assert.IsNotNull(trains.FirstOrDefault(i => i.TrainID == "219"));
             Assert.IsNotNull(trains.FirstOrDefault(i => i.TrainID == "511"));
+        }
+        [Test]
+        public void GetTrainsByTime2()
+        {
+            //arrange
+            string startStation = "taipei";
+            string targetStation = "banqiao";
+            DateOnly date = new DateOnly(2023, 4, 9);
+            TimeOnly startTime = new TimeOnly(12, 0);
+            TimeOnly endTime = new TimeOnly(13, 0);
+            char searchType = 'E';
+            //act
+            var trains = _trainFinder.GetTrainsByTime(startStation, targetStation, date, searchType, startTime, endTime);
+            //assert
+            Assert.AreEqual(1, trains.Count());
+            Assert.IsNotNull(trains.FirstOrDefault(i => i.TrainID == "2193"));
         }
         [Test]
         public void GetTrainsByStation()

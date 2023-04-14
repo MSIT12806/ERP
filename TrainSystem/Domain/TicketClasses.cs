@@ -18,6 +18,7 @@ namespace Train
         {
             //兩兩售票
             //如果剩下單張，就盡量以鄰座已售出的賣
+            GetNowWhenDateTimeIsDefault(ref date);
             List<Ticket> result = new List<Ticket>();
             TrainData train = TrainFinder.GetTrainByID(trainID, date);
             if (train == null) return result;
@@ -32,18 +33,16 @@ namespace Train
             {
                 if (ticketCount > 1)
                 {
-                    Seat seat1 = freeSeats.First(i => i.IsNeighbourSeatFree());
-                    Seat seat2 = seat1.GetNeighbourSeat();
+                    Seat seat1 = freeSeats.First(i => i.IsNeighbourSeatFree(freeSeats));
+                    Seat seat2 = train.GetCarbin(seat1.Carbin).GetNeighbourSeat(seat1.SeatNo);
                     result.Add(new Ticket(startStation, startStationInfo.ArriveTime, targetStation, targetStationInfo.ArriveTime, trainID, seat1.Carbin, seat1.SeatNo, date, seat1.BookThisSeat(startStationInfo.StationNo, targetStationInfo.StationNo, date)));
                     result.Add(new Ticket(startStation, startStationInfo.ArriveTime, targetStation, targetStationInfo.ArriveTime, trainID, seat2.Carbin, seat2.SeatNo, date, seat1.BookThisSeat(startStationInfo.StationNo, targetStationInfo.StationNo, date)));
                     ticketCount -= 2;
-
                 }
                 else
                 {
-
-                    var seat = freeSeats.FirstOrDefault(i => !i.IsNeighbourSeatFree());
-                    seat = seat == null ? freeSeats.FirstOrDefault(i => i.IsNeighbourSeatFree()) : seat;
+                    var seat = freeSeats.FirstOrDefault(i => !i.IsNeighbourSeatFree(freeSeats));
+                    seat = seat == null ? freeSeats.FirstOrDefault(i => i.IsNeighbourSeatFree(freeSeats)) : seat;
                     result.Add(new Ticket(startStation, startStationInfo.ArriveTime, targetStation, targetStationInfo.ArriveTime, trainID, seat.Carbin, seat.SeatNo, date, seat.BookThisSeat(startStationInfo.StationNo, targetStationInfo.StationNo, date)));
                     ticketCount -= 1;
                 }
@@ -63,11 +62,11 @@ namespace Train
             return result;
         }
 
-        private TrainData GetTrain(string trainID)
-        {
+        //private TrainData GetTrain(string trainID)
+        //{
 
-            throw new NotImplementedException();
-        }
+            //throw new NotImplementedException();
+        //}
 
         private void GetNowWhenDateTimeIsDefault(ref DateOnly date)
         {

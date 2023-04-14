@@ -4,7 +4,7 @@ using Train;
 
 namespace DomainTest
 {
-    public class StationResearchTests
+    public class UseCase_StationResearchTests
     {
         IStationPersistant StationStore;
         [SetUp]

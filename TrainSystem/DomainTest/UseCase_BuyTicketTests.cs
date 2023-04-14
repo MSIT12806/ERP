@@ -8,7 +8,7 @@ using static Train.TicketOperator;
 
 namespace DomainTest
 {
-    public class BuyTicketTests
+    public class UseCase_BuyTicketTests
     {
         ITrainPersistant TrainStore;
         TicketOperator ticketOperation;
@@ -80,5 +80,39 @@ namespace DomainTest
             var dateAfter3 = dateTimeProvider.Now().AddDays(-3);
             Assert.Throws<Notify>(() => ticketOperation.BuyTicket("219", Taipei.StationName, Taichung.StationName, DateOnly.FromDateTime(dateAfter3)));
         }
+        [Test]
+        public void BuyTicketTest_NoUnsoldSeat()
+        {
+            for (int i = 0; i < 48; i++)
+            {
+                ticketOperation.BuyTicket("219", Taipei.StationName, Taichung.StationName);
+            }
+            Assert.Throws<Notify>(() => ticketOperation.BuyTicket("219", Taipei.StationName, Taichung.StationName));
+        }
+        [Test]
+        public void BuyTicketTest_TwoSeatTogether()
+        {
+            var tickets = ticketOperation.BuyTickets("219", Taipei.StationName, Taichung.StationName, 2);
+            Assert.AreEqual(2, tickets.Count());
+            var t1 = tickets.First();
+            var t2 = tickets.First(i => i != t1);
+            Assert.IsTrue(IsNeighborSeat(t1, t2));
+        }
+        bool IsNeighborSeat(Ticket t1, Ticket t2)
+        {
+            bool sameCarbin = t1.Carbin == t2.Carbin;
+            bool neighborseat = Seat.GetNeighbourSeatNo(t1.Seat) == t2.Seat;
+            return sameCarbin && neighborseat;
+        }
+        //[Test]
+        //public void BuyTicketTest_ThreeSeatThatTwoTogetherAddOne()
+        //{
+        //    Assert.Fail();
+        //}
+        //[Test]
+        //public void BuyTicketTest_WindowSide()
+        //{
+        //    Assert.Fail();
+        //}
     }
 }
