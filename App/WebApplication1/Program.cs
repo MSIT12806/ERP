@@ -49,8 +49,12 @@ namespace WebApplication1
             app.UseMiddleware<SpaMiddleware>();
             //app.UseSession();
 
-            app.MapControllers();
-
+            //app.MapControllers();
+            app.UseRouting();
+            app.UseEndpoints(e => {
+                e.MapControllers();
+                e.MapFallbackToFile("index.html");
+            });
             app.Run();
         }
     }
