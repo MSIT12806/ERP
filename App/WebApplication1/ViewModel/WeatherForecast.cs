@@ -1,4 +1,4 @@
-namespace WebApplication1
+namespace App_NET6.ViewModel
 {
     public class WeatherForecast
     {

@@ -1,8 +1,10 @@
 using App_NET6.Controllers;
+using Domain_Train.dev;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NET6MiddleWareStudy;
+using Train;
 
 namespace WebApplication1
 {
@@ -28,6 +30,7 @@ namespace WebApplication1
             builder.Services.AddScoped<IRoleStore<IdentityRole>, CustomRoleStore>();
             builder.Services.AddScoped<UserManager<IdentityUser>>();
             builder.Services.AddScoped<SignInManager<IdentityUser>>();
+            builder.Services.AddScoped<ITrainPersistant, FakeTrainDb>();
             //builder.Services.AddScoped<RoleManager<IdentityRole>>();
 
 

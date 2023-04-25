@@ -20,9 +20,15 @@ const keyFilePath = path.join(baseFolder, `${certificateName}.key`);
 module.exports = {
     // 將編譯後的檔案輸出到指定的目錄
     outputDir: '../wwwroot',
-    //在網頁url後面加入版本號，使其更新後可以即時刷新，不受到 cache 影響。
     configureWebpack: {
-        output: {
+        //以 @ 代替 src
+        resolve: {
+            alias: {
+                '@': path.resolve(__dirname, 'src'),
+            },
+        },
+    //在網頁url後面加入版本號，使其更新後可以即時刷新，不受到 cache 影響。
+            output: {
             filename: '[name].[hash].js',
             chunkFilename: '[name].[hash].js'
         },

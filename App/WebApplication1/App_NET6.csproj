@@ -12,6 +12,7 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\..\ERP_DriveAndFramework\Identity\Framework_Identity.csproj" />
+	  <ProjectReference Include="..\..\TrainSystem\Domain\Domain_Train.csproj" />
 	</ItemGroup>
 
 	<Target Name="VueBuild" BeforeTargets="Build">

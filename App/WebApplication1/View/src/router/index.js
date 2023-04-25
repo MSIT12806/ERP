@@ -3,6 +3,7 @@ import RonHome from '../components/Home.vue'
 import RonAbout from '../components/About.vue'
 import RonRegister from '../components/Register.vue'
 import TrainMain from '../components/trainsystem/TrainMain.vue'
+import TrainSearchByLine from '../components/trainsystem/TrainSearchByLine.vue'
 
 const routes = [
     {
@@ -24,7 +25,12 @@ const routes = [
         path: '/trainMain',
         name: 'TrainMain',
         component: TrainMain
-    }
+    },
+    {
+        path: '/TrainSearchByLine',
+        name: 'TrainSearchByLine',
+        component: TrainSearchByLine
+    },
 ]
 
 const router = createRouter({
