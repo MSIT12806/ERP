@@ -47,13 +47,13 @@ namespace WebApplication1
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
             app.UseStaticFiles();
             app.UseMiddleware<SpaMiddleware>();
             //app.UseSession();
 
             //app.MapControllers();
             app.UseRouting();
+            app.UseAuthorization();//將身份驗證和授權中間件放在 UseRouting 和 UseEndPoints 之間很重要。
             app.UseEndpoints(e => {
                 e.MapControllers();
                 e.MapFallbackToFile("index.html");
