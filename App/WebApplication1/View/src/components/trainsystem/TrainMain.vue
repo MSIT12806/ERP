@@ -15,7 +15,7 @@
             <button @click="fetchData()">車站後台</button>
         </div>
         <div class="col-lg-12">
-            <button class="btn btn-primary" v-for="trunkLine in trunkLines" key="trunkLine" @click="fetchData(`Station?${trunkLine.no}`)">{{trunkLine.chiName}}</button>
+            <button class="btn btn-primary" v-for="trunkLine in trunkLines" key="trunkLine" @click="fetchData(`Station?trunkLine=${trunkLine.no}`)">{{trunkLine.chiName}}</button>
         </div>
     </div>
 </template>
@@ -30,7 +30,7 @@
             }
         },
         methods: {
-            fetchData(url,params) {
+            fetchData(url) {
                 this.post = null;
                 this.loading = true;
 
@@ -38,6 +38,7 @@
                     .then(json => {
                         this.post = json;
                         this.loading = false;
+                        console.log(this.post);
                         return;
                     });
             },
