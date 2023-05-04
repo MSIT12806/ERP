@@ -13,6 +13,7 @@ namespace Domain_Train
         Station GetStation(string name);
         int GetStationNo(string name, TrunkLine trunkLine);
         IEnumerable<int> GetStationNoList(string start, string end, TrunkLine trunkLine);
+        IEnumerable<Station> GetStations(TrunkLine trunkLine);
     }
     public class FakeStationDB : IStationPersistant
     {
@@ -64,6 +65,11 @@ namespace Domain_Train
             }
 
             return list;
+        }
+
+        public IEnumerable<Station> GetStations(TrunkLine trunkLine)
+        {
+            return AllStations.Where(i => i.StationNo.ContainsKey(trunkLine)).OrderBy(i => i.StationNo[trunkLine]);
         }
     }
 }

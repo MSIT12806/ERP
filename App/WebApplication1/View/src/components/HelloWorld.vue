@@ -50,8 +50,7 @@
                 this.post = null;
                 this.loading = true;
 
-                fetch('weatherforecast')
-                    .then(r => r.json())
+                this.$getData('weatherforecast')
                     .then(json => {
                         this.post = json;
                         this.loading = false;

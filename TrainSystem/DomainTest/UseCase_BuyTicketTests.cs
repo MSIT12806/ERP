@@ -117,9 +117,54 @@ namespace DomainTest
         {
             var tickets = ticketOperation.BuyTickets("219", Taipei.StationName, Taichung.StationName, 3);
             Assert.AreEqual(3, tickets.Count());
+            var ticketArr = tickets.ToArray();
+            var isSameCarbin = ticketArr[0].Carbin == ticketArr[1].Carbin || ticketArr[0].Carbin == ticketArr[2].Carbin || ticketArr[1].Carbin == ticketArr[2].Carbin;
+            var isNeighbor = Seat.GetNeighbourSeatNo(ticketArr[0].Seat) == ticketArr[1].Seat || Seat.GetNeighbourSeatNo(ticketArr[0].Seat) == ticketArr[2].Seat || Seat.GetNeighbourSeatNo(ticketArr[1].Seat) == ticketArr[2].Seat;
+            Assert.IsTrue(isSameCarbin && isNeighbor);
             //var t1 = tickets.First();
             //var t2 = tickets.First(i => i != t1);
             //Assert.IsTrue(IsNeighborSeat(t1, t2));
+        }
+
+        [Test]
+        public void BuyTicketsTest_BuyCountMoreThanEmptySeats()
+        {
+            for (int i = 0; i < 46; i++)
+            {
+                ticketOperation.BuyTicket("219", Taipei.StationName, Taichung.StationName);
+            }
+            var ex = Assert.Throws<Notify>(() => ticketOperation.BuyTickets("219", Taipei.StationName, Taichung.StationName, 3));
+            Assert.AreEqual("沒有足夠的座位", ex.Message);
+        }
+        [Test]
+        public void BuyTicketsTest_BuyTwoButCanNotTogether()
+        {
+            //arrange
+            int seatPerCarbin = 1;
+            int carbin = 1;
+            for (int i = 0; i < 46; i++)
+            {
+                if(carbin == 1 && seatPerCarbin == 1)
+                {
+                    seatPerCarbin++;
+                    i--;
+                    continue;
+                }
+                ticketOperation.BuyTicket("219",carbin, seatPerCarbin, Taipei.StationName, Taichung.StationName);
+                seatPerCarbin++;
+                if (seatPerCarbin == 17)
+                {
+                    carbin++;
+                    seatPerCarbin = 1;
+                }
+            }
+            //act
+            var ticketArr = ticketOperation.BuyTickets("219", Taipei.StationName, Taichung.StationName, 2).OrderBy(i=>i.Carbin).ThenBy(i=>i.Seat).ToArray();
+            Assert.AreEqual(2, ticketArr.Length);
+            Assert.AreEqual(1, ticketArr[0].Carbin);
+            Assert.AreEqual(1, ticketArr[0].Seat);
+            Assert.AreEqual(3, ticketArr[1].Carbin);
+            Assert.AreEqual(16, ticketArr[1].Seat);
         }
 
         //[Test]

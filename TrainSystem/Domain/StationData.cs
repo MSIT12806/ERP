@@ -53,6 +53,7 @@ namespace Domain_Train
         public LevelType Level;
         public Dictionary<TrunkLine, int> StationNo { get; }
         public string StationName { get; }
+
     }
     public class StationDatas
     {
@@ -62,7 +63,5 @@ namespace Domain_Train
         public static readonly Station Taichung = new Station("taichung",LevelType.一等, (TrunkLine.環島線逆, 1040), (TrunkLine.環島線順, 1111));
         public static readonly Station Kaohsiung = new Station("kaohsiung", LevelType.特等, (TrunkLine.環島線逆, 1080), (TrunkLine.環島線順, 1081));
         public static readonly Station Hualian = new Station("hualian", LevelType.特等, (TrunkLine.環島線逆, 1111), (TrunkLine.環島線順, 1041));
-       
-     
     }
 }
